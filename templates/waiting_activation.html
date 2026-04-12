@@ -1,0 +1,71 @@
+{% extends 'home.html' %}
+
+{% block content %}
+<style>
+    .waiting-container {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 107, 53, 0.2);
+        border-radius: 30px;
+        padding: 60px 40px;
+        width: 90%;
+        max-width: 500px;
+        margin: 100px auto;
+        text-align: center;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        color: white;
+    }
+
+    .waiting-container i {
+        font-size: 60px;
+        color: #ff6b35;
+        margin-bottom: 20px;
+        display: block;
+    }
+
+    .waiting-container h2 {
+        color: #ff6b35;
+        margin-bottom: 15px;
+    }
+
+    .waiting-container p {
+        color: #94a3b8;
+        line-height: 1.6;
+        font-size: 18px;
+    }
+
+    .contact-btn {
+        display: inline-block;
+        margin-top: 25px;
+        padding: 12px 30px;
+        background: #ff6b35;
+        color: white;
+        text-decoration: none;
+        border-radius: 12px;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+    .contact-btn:hover {
+        background: #e55a2b;
+        transform: translateY(-3px);
+    }
+</style>
+
+<div class="waiting-container">
+    <div style="font-size: 50px; margin-bottom: 20px;">⏳</div>
+    
+    <h2>قيد المراجعة يا بطل! 🛡️</h2>
+    
+    <p>
+        أهلاً بك في منصة الجنرال. <br>
+        حسابك حالياً قيد التفعيل. بيتم مراجعة البيانات لضمان أمان محتوى الكتيبة.
+    </p>
+
+    <p style="font-size: 14px; margin-top: 10px;">
+        لو تأخر التفعيل، تقدر تتواصل مع الدعم الفني أو السكرتارية.
+    </p>
+
+    <a href="https://wa.me/رقم_تليفونك" class="contact-btn">تواصل معنا واتساب ✅</a>
+</div>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends 'home.html' %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<style>
+    /* حاوية الخيارات الزجاجية */
+    .auth-selection {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin-top: 20px;
+        flex-wrap: wrap;
+        width: 100%;
+        max-width: 850px;
+    }
+
+    .auth-box {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 107, 53, 0.2);
+        border-radius: 30px;
+        padding: 40px 20px;
+        text-align: center;
+        flex: 1;
+        min-width: 280px;
+        transition: 0.4s ease;
+        text-decoration: none;
+    }
+
+    .auth-box:hover {
+        transform: translateY(-10px);
+        border-color: #ff6b35;
+        background: rgba(255, 107, 53, 0.05);
+    }
+
+    .auth-box h3 {
+        color: #000000;
+        font-size: 24px;
+        margin: 15px 0;
+    }
+
+    .auth-box p {
+        color: #ffffff;
+        font-size: 14px;
+    }
+
+    /* أيقونات بسيطة */
+    .auth-icon {
+        font-size: 45px;
+    }
+</style>
+
+<div class="auth-selection">
+    <a href="{% url 'register' %}" class="auth-box">
+        <div class="auth-icon">🆕</div>
+        <h3>طالب جديد</h3>
+        <p>أنشئ حسابك الآن وانضم لكتيبة الجنرال</p>
+    </a>
+
+    <div class="auth-box" style="cursor: default; background: rgba(255, 107, 53, 0.05); border-color: #000000;">
+        <div class="auth-icon">🔑</div>
+        <h3>طالب لدينا</h3>
+        <form method="POST" style="margin-top: 20px;">
+            {% csrf_token %}
+            <input type="text" name="username" placeholder="اسم المستخدم" required 
+                   style="width: 80%; padding: 10px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; text-align: center;">
+            <div style="position: relative; width: 80%; margin: 0 auto 15px auto;">
+    <input type="password" name="password" id="id_password" placeholder="كلمة السر" required 
+           style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; text-align: center;">
+    
+    <i class="bi bi-eye" id="toggleIcon" onclick="togglePassword()" 
+       style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #ff6b35; font-size: 1.2rem;"></i>
+</div>
+            <button type="submit" style="background: #09116d; color: white; border: none; padding: 10px 30px; border-radius: 8px; font-weight: bold; cursor: pointer;">دخول</button>
+        </form>
+    </div>
+</div>
+<script>
+function togglePassword() {
+    const passwordInput = document.getElementById('id_password');
+    const toggleIcon = document.getElementById('toggleIcon');
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleIcon.classList.replace('bi-eye', 'bi-eye-slash');
+    } else {
+        passwordInput.type = 'password';
+        toggleIcon.classList.replace('bi-eye-slash', 'bi-eye');
+    }
+}
+</script>
+{% endblock %}

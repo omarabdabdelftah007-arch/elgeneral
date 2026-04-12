@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة الجنرال | أ. محمد عيد</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --burnt: #C44B00;
+            --burnt-light: #E05A00;
+            --burnt-glow: #ffffff;
+            --burnt-dim: #7A2E00;
+            --black: #0a0a0a;
+            --black-mid: #111111;
+            --glass: rgba(196, 75, 0, 0.07);
+            --border: rgba(196, 75, 0, 0.35);
+            --border-glow: rgba(255, 107, 26, 0.5);
+        }
+
+
+    /* ===== BACKGROUND PATTERN ===== */
+    body {
+        margin: 0;
+        padding: 0;
+        color: white;
+        font-family: 'Segoe UI', Tahoma, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow-x: hidden;
+        position: relative;
+
+        /* طبقة الخلفية الأساسية */
+        background-color: #f08216de;
+    }
+
+    /* النقشة الهندسية — شبكة مائلة */
+    body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background-image:
+            /* خطوط مائلة */
+            repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 38px,
+                rgba(196, 75, 0, 0.07) 38px,
+                rgba(196, 75, 0, 0.07) 40px
+            ),
+            repeating-linear-gradient(
+                -45deg,
+                transparent,
+                transparent 38px,
+                rgba(196, 75, 0, 0.05) 38px,
+                rgba(196, 75, 0, 0.05) 40px
+            );
+        pointer-events: none;
+    }
+
+    /* تدرج اللون الأساسي فوق النقشة */
+    body::after {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background:
+            radial-gradient(ellipse at top right, rgba(196,75,0,0.22) 0%, transparent 55%),
+            radial-gradient(ellipse at bottom left, rgba(120,40,0,0.18) 0%, transparent 50%),
+            radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.85) 100%);
+        pointer-events: none;
+    }
+
+    /* كل المحتوى فوق الخلفية */
+    .main-wrapper, footer {
+        position: relative;
+        z-index: 1;
+    }
+
+    .main-wrapper {
+        width: 95%;
+        max-width: 1200px;
+        margin-top: 3vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-bottom: 50px;
+    }
+
+    /* ===== BRAND ===== */
+    .brand-section { text-align: center; margin-bottom: 20px; }
+
+    .main-logo {
+        width: clamp(100px, 15vw, 160px);
+        filter: drop-shadow(0 0 25px rgba(255, 107, 26, 0.6));
+        margin-bottom: 10px;
+    }
+
+    h1 {
+        font-size: clamp(32px, 6vw, 58px);
+        margin: 0;
+        background: linear-gradient(160deg, #fff 0%, var(--burnt-glow) 45%, var(--burnt-dim) 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 900;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        text-shadow: none;
+        filter: drop-shadow(0 0 30px rgba(196,75,0,0.4));
+    }
+
+    /* ===== NAVBAR ===== */
+    .glass-nav {
+        background: rgba(10,10,10,0.6);
+        backdrop-filter: blur(24px);
+        border: 1px solid var(--border);
+        padding: 10px 20px;
+        border-radius: 100px;
+        display: flex;
+        gap: 8px;
+        margin: 20px 0 40px 0;
+        box-shadow:
+            0 15px 35px rgba(0,0,0,0.7),
+            inset 0 1px 0 rgba(255,107,26,0.1);
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .glass-nav a {
+        color: #a0aec0;
+        text-decoration: none;
+        font-size: clamp(12px, 2.5vw, 15px);
+        font-weight: 600;
+        padding: 10px 22px;
+        border-radius: 50px;
+        transition: 0.35s all cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .glass-nav a:hover {
+        color: white;
+        background: rgba(196, 75, 0, 0.2);
+        transform: scale(1.06);
+    }
+
+    .glass-nav a.active {
+        background: linear-gradient(135deg, var(--burnt-light), var(--burnt-dim));
+        color: #fff !important;
+        box-shadow: 0 4px 18px rgba(196, 75, 0, 0.55);
+    }
+
+    /* ===== TEACHER SECTION ===== */
+    .teacher-section {
+        background: linear-gradient(145deg, rgba(196,75,0,0.06), rgba(0,0,0,0.4));
+        border: 1px solid var(--border);
+        border-radius: 40px;
+        padding: clamp(30px, 5vw, 60px) 20px clamp(40px, 6vw, 70px);
+        text-align: center;
+        width: 100%;
+        box-sizing: border-box;
+        position: relative;
+        box-shadow:
+            0 20px 60px rgba(0,0,0,0.7),
+            inset 0 1px 0 rgba(255,107,26,0.08);
+        overflow: hidden;
+    }
+
+    /* زخرفة ركن */
+    .teacher-section::before {
+        content: '';
+        position: absolute;
+        top: -60px; left: -60px;
+        width: 200px; height: 200px;
+        background: radial-gradient(circle, rgba(196,75,0,0.18) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .teacher-img-container {
+        position: relative;
+        width: clamp(260px, 38vw, 420px);
+        height: clamp(320px, 48vw, 520px);
+        margin: -20px auto 0;
+    }
+
+    /* صورة مندمجة مع الخلفية */
+    .teacher-img {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+        border: none;
+        object-fit: cover;
+        object-position: top center;
+        display: block;
+
+        /* تلاشي من الأسفل والجانبين */
+        -webkit-mask-image:
+            linear-gradient(to bottom, black 35%, black 55%, transparent 100%),
+            linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%);
+        -webkit-mask-composite: destination-in;
+        mask-image:
+            linear-gradient(to bottom, black 35%, black 55%, transparent 100%),
+            linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%);
+        mask-composite: intersect;
+
+        filter: drop-shadow(0 -10px 40px rgba(196,75,0,0.25));
+    }
+
+    /* طبقة الضباب تحت الصورة */
+    .teacher-img-container::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+        height: 80px;
+        background: radial-gradient(ellipse at center,
+            rgba(196,75,0,0.35) 0%,
+            rgba(150,50,0,0.15) 50%,
+            transparent 75%
+        );
+        filter: blur(18px);
+        z-index: -1;
+        border-radius: 50%;
+    }
+
+    .cv-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+        margin-top: 40px;
+    }
+
+    .cv-item {
+        background: rgba(0,0,0,0.3);
+        padding: 18px;
+        border-radius: 18px;
+        border-right: 5px solid var(--burnt);
+        font-size: 15px;
+        text-align: right;
+        transition: 0.3s;
+        backdrop-filter: blur(10px);
+    }
+    .cv-item:hover {
+        background: rgba(196,75,0,0.1);
+        transform: translateX(-6px);
+        border-right-color: var(--burnt-glow);
+    }
+    .cv-item i { margin-left: 10px; color: var(--burnt-glow); }
+
+    /* ===== SECTION TITLE ===== */
+    .section-title {
+        text-align: center;
+        color: white;
+        margin: 60px 0 30px;
+        font-size: clamp(1.5rem, 4vw, 2.2rem);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    /* ===== COURSES ===== */
+    .courses-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px;
+        width: 100%;
+    }
+
+    .course-card {
+        background: linear-gradient(160deg, rgba(30,10,0,0.8), rgba(10,10,10,0.9));
+        border: 1px solid var(--border);
+        border-radius: 25px;
+        overflow: hidden;
+        transition: 0.4s;
+        display: flex;
+        flex-direction: column;
+        backdrop-filter: blur(12px);
+    }
+    .course-card:hover {
+        transform: translateY(-10px);
+        border-color: var(--burnt-glow);
+        box-shadow: 0 15px 40px rgba(196,75,0,0.2);
+    }
+    .course-thumb { width: 100%; height: 200px; object-fit: cover; }
+    .course-content {
+        padding: 20px;
+        text-align: center;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    .course-tag {
+        background: linear-gradient(135deg, var(--burnt-light), var(--burnt-dim));
+        color: #fff;
+        padding: 5px 16px;
+        border-radius: 50px;
+        font-size: 12px;
+        font-weight: 800;
+        align-self: center;
+        box-shadow: 0 3px 12px rgba(196,75,0,0.4);
+    }
+
+    /* ===== VIDEO ===== */
+    .video-wrapper {
+        width: 100%;
+        max-width: 900px;
+        margin: 20px auto;
+        position: relative;
+        border: 2px solid var(--border);
+        border-radius: 25px;
+        overflow: hidden;
+        background: #000;
+        box-shadow:
+            0 10px 40px rgba(0,0,0,0.6),
+            0 0 0 1px rgba(255,107,26,0.1);
+        aspect-ratio: 16 / 9;
+    }
+    .video-wrapper video { width: 100%; height: 100%; display: block; object-fit: contain; }
+
+    /* ===== HONOR ===== */
+    .honor-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        width: 100%;
+    }
+
+    .honor-card {
+        background: linear-gradient(145deg, rgba(196,75,0,0.08), rgba(0,0,0,0.5));
+        border: 1px solid var(--border);
+        border-radius: 25px;
+        padding: 30px;
+        text-align: center;
+        position: relative;
+        transition: 0.3s;
+        backdrop-filter: blur(10px);
+    }
+    .honor-card:hover {
+        background: rgba(196,75,0,0.12);
+        box-shadow: 0 8px 30px rgba(196,75,0,0.15);
+    }
+    .honor-card i {
+        position: absolute; top: -15px; right: 20px;
+        color: var(--burnt-glow); font-size: 30px;
+        filter: drop-shadow(0 0 8px rgba(255,107,26,0.5));
+    }
+
+    /* ===== FOOTER ===== */
+    .footer {
+        margin-top: 60px;
+        padding: 40px 20px;
+        background: rgba(0,0,0,0.6);
+        width: 100%;
+        text-align: center;
+        font-size: 14px;
+        color: #64748b;
+        border-top: 1px solid var(--border);
+        backdrop-filter: blur(10px);
+    }
+
+    @media (max-width: 480px) {
+        .glass-nav { border-radius: 20px; gap: 5px; }
+        .glass-nav a { width: 45%; padding: 10px 5px; text-align: center; }
+        .cv-grid { grid-template-columns: 1fr; }
+    }
+</style>
+
+
+</head>
+<body>
+
+
+<div class="main-wrapper">
+    <div class="brand-section">
+        {% load static %}
+        <img src="{% static 'images/logo.png' %}" alt="الجنرال" class="main-logo" onerror="this.style.display='none'">
+        <h1>EL GENERAL</h1>
+    </div>
+
+    <nav class="glass-nav">
+        {% if not user.is_authenticated %}
+            <a href="{% url 'login' %}" class="{% if request.resolver_match.url_name == 'login' %}active{% endif %}">دخول 🔑</a>
+            <a href="{% url 'register' %}" class="{% if request.resolver_match.url_name == 'register' %}active{% endif %}">انضمام ✍️</a>
+        {% else %}
+            <a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">الرئيسية 🏠</a>
+            <a href="{% url 'general' %}" class="{% if request.resolver_match.url_name == 'general' %}active{% endif %}">كورساتي 📚</a>
+            {% if user.is_superuser %}
+                <a href="/admin/" target="_blank" style="color: var(--burnt-glow);">الأدمن ⚙️</a>
+            {% endif %}
+            <a href="{% url 'logout' %}">خروج 📤</a>
+        {% endif %}
+        <a href="https://wa.me/201002633125" target="_blank">تواصل 📞</a>
+    </nav>
+
+    <div class="content-area" style="width: 100%;">
+        {% block content %}
+
+        {% load static %}
+        <div class="teacher-section">
+            <div class="teacher-img-container">
+                {% if teacher.main_image %}
+                    <img src="{{ teacher.main_image.url }}" alt="{{ teacher.name }}" class="teacher-img">
+                {% else %}
+                    <img src="{% static 'images/123456.jpg' %}" alt="أ. محمد عيد" class="teacher-img" onerror="this.src='https://via.placeholder.com/280?text=الجنرال'">
+                {% endif %}
+            </div>
+
+            <h2 style="color: var(--burnt-glow); font-size: clamp(1.8rem, 4vw, 3rem); margin: 0; text-shadow: 0 0 30px rgba(255,107,26,0.4);">{{ teacher.name|default:"الأستاذ محمد عيد" }}</h2>
+            <p style="color: #94a3b8; font-size: 1.2rem; margin-top: 10px;">خبير المواد الفلسفية وعلم النفس</p>
+
+            <div style="max-width: 700px; margin: 30px auto; position: relative;">
+                <i class="fas fa-quote-right" style="position: absolute; top: -20px; right: -20px; opacity: 0.15; font-size: 40px; color: var(--burnt-glow);"></i>
+                <p style="font-style: italic; color: #cbd5e1; font-size: 1.3rem; line-height: 1.7;">
+                    "{{ teacher.philosophical_quote|default:'الفلسفة هي طريق الحرية والوعي' }}"
+                </p>
+            </div>
+
+            <div class="cv-grid">
+                <div class="cv-item"><i class="fas fa-check-circle"></i> معد المادة بجريدة الجمهورية</div>
+                <div class="cv-item"><i class="fas fa-check-circle"></i> مقدم برنامج (مدرسك في بيتك)</div>
+                <div class="cv-item"><i class="fas fa-check-circle"></i> صاحب أقوى توقعات للثانوية العامة</div>
+                <div class="cv-item"><i class="fas fa-check-circle"></i> أفضل مشاهدات يوتيوب في المنظومة الجديدة</div>
+            </div>
+        </div>
+
+        <h2 class="section-title"><i class="fas fa-layer-group" style="color: var(--burnt-glow);"></i> أحدث الكورسات</h2>
+        <div class="courses-grid">
+            {% for course in courses %}
+            <div class="course-card">
+                {% if course.image %}
+                <img src="{{ course.image.url }}" class="course-thumb" alt="{{ course.title }}">
+                {% else %}
+                <div style="height: 200px; background: #120500; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-book-open" style="font-size: 40px; color: var(--burnt); opacity: 0.4;"></i>
+                </div>
+                {% endif %}
+                <div class="course-content">
+                    <span class="course-tag">{{ course.get_grade_display }}</span>
+                    <h3 style="margin: 15px 0 10px;">{{ course.title }}</h3>
+                    <p style="color: #94a3b8; font-size: 14px; height: 40px; overflow: hidden;">{{ course.description|truncatewords:10 }}</p>
+                    <a href="{% url 'general' %}" style="display: block; margin-top: auto; color: var(--burnt-glow); text-decoration: none; font-weight: bold; border: 1px solid var(--burnt); padding: 10px; border-radius: 10px; transition: 0.3s;">تفاصيل الكورس</a>
+                </div>
+            </div>
+            {% empty %}
+            <p style="text-align: center; width: 100%; color: #64748b;">لا توجد كورسات معروضة حالياً.</p>
+            {% endfor %}
+        </div>
+
+        <h2 class="section-title"><i class="fas fa-play-circle" style="color: var(--burnt-glow);"></i> كلمة الجنرال للطلاب</h2>
+        <div class="video-wrapper">
+            {% if teacher.intro_video %}
+                <video controls controlsList="nodownload" oncontextmenu="return false;">
+                    <source src="{{ teacher.intro_video.url }}" type="video/mp4">
+                    متصفحك لا يدعم تشغيل الفيديو.
+                </video>
+            {% else %}
+                <div style="height: 100%; display: flex; align-items: center; justify-content: center; background: #000;">
+                     <p style="color: #64748b;">قريباً.. الفيديو التعريفي</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <h2 class="section-title" style="color: #ffffff;"><i class="fas fa-crown"></i> أوائل الجمهورية والجنرال</h2>
+        <div class="honor-grid">
+            {% for student in honor_students %}
+            <div class="honor-card">
+                <i class="fas fa-medal"></i>
+                <h3 style="color: white; margin: 0 0 10px;">{{ student.student_name }}</h3>
+                <p style="color: #ffffff; font-weight: bold; margin: 0;">{{ student.rank_description }}</p>
+            </div>
+            {% empty %}
+            <div class="honor-card"><i class="fas fa-medal"></i><h3 style="color: white;">چني محمد جمال</h3><p style="color: var(--burnt-glow);">الأولى على محافظة كفر الشيخ</p></div>
+            <div class="honor-card"><i class="fas fa-medal"></i><h3 style="color: white;">مروان محمد رافع</h3><p style="color: var(--burnt-glow);">الأول على محافظة كفر الشيخ</p></div>
+            {% endfor %}
+        </div>
+
+        {% endblock %}
+    </div>
+</div>
+
+<!-- Floating Button -->
+<div class="floating-container" id="fab">
+
+    <div class="fab-options">
+        <a href="tel:+201014429874" class="fab-option-item">
+    <i class="fas fa-phone"></i> اتصال مباشر
+</a>
+
+        <a href="https://wa.me/+201002633125" target="_blank" class="fab-option-item">
+            <i class="fab fa-whatsapp"></i> WhatsApp
+        </a>
+
+        <a href="https://t.me/+26OO275xOHgzMjc0
+رابط التليجرام" target="_blank" class="fab-option-item">
+            <i class="fab fa-telegram"></i> Telegram
+        </a>
+
+        <a href="https://www.facebook.com/share/1BFgemadkQ/?mibextid=wwXIfr
+رابط الفيس بوك" target="_blank" class="fab-option-item">
+            <i class="fab fa-facebook"></i> Facebook
+        </a>
+
+    </div>
+
+    <div class="fab-main" id="fabBtn">
+        <i class="fas fa-comments"></i>
+    </div>
+
+</div>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+.floating-container {
+    position: fixed !important;
+    bottom: 0px !important;
+    padding-bottom: 15px;
+    right: 30px !important;
+    z-index: 999999 !important;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 15px;
+}
+
+.fab-main {
+    width: 65px;
+    height: 65px;
+    background: linear-gradient(135deg, #ff7a00, #ffae42);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 26px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.floating-container.active .fab-main {
+    transform: rotate(135deg);
+}
+
+.fab-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: 0.3s;
+}
+
+.floating-container.active .fab-options {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0);
+}
+
+.fab-option-item {
+    background: rgba(0,0,0,0.7);
+    padding: 10px 15px;
+    border-radius: 30px;
+    color: white;
+    text-decoration: none;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    transition: 0.3s;
+}
+
+.fab-option-item:hover {
+    background: #ff7a00;
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    const fab = document.getElementById("fab");
+    const fabBtn = document.getElementById("fabBtn");
+
+    if (!fab || !fabBtn) {
+        console.log("FAB elements مش موجودة");
+        return;
+    }
+
+    fabBtn.addEventListener("click", function(e) {
+        e.stopPropagation();
+        fab.classList.toggle("active");
+    });
+
+    document.addEventListener("click", function(e) {
+        if (!fab.contains(e.target)) {
+            fab.classList.remove("active");
+        }
+    });
+
+});
+</script>
+
+
+   
+
+    <div class="fab-options">
+        <a href="https://wa.me/201002633125" target="_blank" class="fab-option-item">
+            <span>الجنرال (واتس)</span>
+            <i class="fab fa-whatsapp" style="color: #25D366;"></i>
+        </a>
+
+        <a href="tel:01014429874" class="fab-option-item">
+            <span>الدعم الفني</span>
+            <i class="fas fa-headset" style="color: var(--bright-orange);"></i>
+        </a>
+        
+        </div>
+</div>
+
+<footer class="footer">
+    <p>جميع الحقوق محفوظة لمنصة الجنرال ©️ 2026</p>
+    <p>تم التطوير بواسطة <a href="https://wa.me/+201117701289" target="_blank" style="color: var(--burnt-glow); text-decoration: none; font-weight: bold;">SIGMA WEB SOLUTIONS</a></p>
+</footer>
+
+</body>
+</html>

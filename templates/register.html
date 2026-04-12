@@ -1,0 +1,133 @@
+{% extends 'home.html' %}
+
+{% block content %}
+<style>
+    /* حاوية التسجيل الزجاجية */
+    .register-container {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 107, 53, 0.2);
+        border-radius: 30px;
+        padding: 40px;
+        width: 95%;
+        max-width: 600px; /* كبرتها شوية عشان الخانات زادت */
+        margin: 40px auto;
+        text-align: center;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        color: white;
+    }
+
+    .register-container h2 { color: #000000; margin-bottom: 25px; font-size: 28px; }
+    .section-title { color: #ffffff; text-align: right; margin: 15px 10px 10px; font-size: 14px; border-bottom: 1px solid #334155; padding-bottom: 5px; }
+    .form-group { margin-bottom: 15px; text-align: right; }
+    
+    .register-container input, .register-container select {
+        width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #334155;
+        background: #0f172a; color: white; text-align: center; font-size: 16px; transition: 0.3s;
+    }
+
+    .register-container input:focus { border-color: #ff6b35; outline: none; box-shadow: 0 0 10px rgba(255, 107, 53, 0.2); }
+
+    .btn-register {
+        background: #441e76; color: white; border: none; padding: 15px; border-radius: 12px;
+        font-weight: bold; font-size: 18px; cursor: pointer; width: 100%; margin-top: 25px; transition: 0.3s;
+    }
+
+    .btn-register:hover { background: #2b50e5; transform: scale(1.01); }
+    .login-link { margin-top: 20px; color: #ffffff; font-size: 14px; }
+    .login-link a { color: #141373; text-decoration: none; font-weight: bold; }
+    .error-msg { color: #ff4d4d; font-size: 12px; margin-top: 5px; display: block; }
+</style>
+
+<div class="register-container">
+    <h2>انضم لكتيبة الجنرال 🆕</h2>
+    
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="section-title">بيانات الطالب الشخصية</div>
+        <div class="form-group">
+            <input type="text" name="username" placeholder="اسم مستخدم الطالب (بالإنجليزي)" required>
+            {% if form.username.errors %}<span class="error-msg">{{ form.username.errors }}</span>{% endif %}
+        </div>
+
+        <div class="form-group">
+            <input type="email" name="email" placeholder="البريد الإلكتروني للطالب" required>
+        </div>
+
+        <div class="form-group" style="position: relative;">
+    <input type="password" name="password" id="student_pass" placeholder="كلمة سر حساب الطالب" required>
+    <i class="bi bi-eye" id="icon_student" onclick="togglePass('student_pass', 'icon_student')" 
+       style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #ff6b35; font-size: 1.2rem;"></i>
+</div>
+
+        <div class="form-group">
+            <input type="tel" name="phone" placeholder="رقم موبايل الطالب" required>
+        </div>
+
+        <div class="section-title">بيانات ولي الأمر</div>
+        <div class="form-group">
+            <input type="text" name="parent_username" placeholder="اسم مستخدم ولي الأمر (بالإنجليزي)" required>
+        </div>
+        
+        <div class="form-group">
+            <input type="email" name="parent_email" placeholder="البريد الإلكتروني لولي الأمر" required>
+        </div>
+
+       <div class="form-group" style="position: relative;">
+    <input type="password" name="parent_password" id="parent_pass" placeholder="كلمة سر ولي الأمر" required>
+    <i class="bi bi-eye" id="icon_parent" onclick="togglePass('parent_pass', 'icon_parent')" 
+       style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #ff6b35; font-size: 1.2rem;"></i>
+</div>
+
+        <div class="form-group">
+            <input type="tel" name="parent_phone" placeholder="رقم موبايل ولي الأمر" required>
+        </div>
+
+        <div class="section-title">البيانات الدراسية</div>
+        <div class="form-group">
+            <select name="grade" required>
+                <option value="" disabled selected>اختر سنتك الدراسية</option>
+                <option value="1">الصف الأول الثانوي</option>
+                <option value="2">الصف الثاني الثانوي</option>
+                <option value="3">الصف الثالث الثانوي</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <select name="system" required>
+                <option value="" disabled selected>النظام التعليمي</option>
+                <option value="general">عام</option>
+                <option value="azhar">أزهري</option>
+                <option value="bakaloria">بكالوريا</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <input type="text" name="governorate" placeholder="المحافظة" required>
+        </div>
+
+        <button type="submit" class="btn-register">إنشاء الحسابات الآن 🚀</button>
+    </form>
+
+    <div class="login-link">
+        لديك حساب بالفعل؟ <a href="{% url 'login' %}">سجل دخولك هنا</a>
+    </div>
+</div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<script>
+function togglePass(inputId, iconId) {
+    const passInput = document.getElementById(inputId);
+    const passIcon = document.getElementById(iconId);
+    
+    if (passInput.type === 'password') {
+        passInput.type = 'text'; // يظهر الباسورد
+        passIcon.classList.replace('bi-eye', 'bi-eye-slash'); // يغير شكل العين
+    } else {
+        passInput.type = 'password'; // يخفي الباسورد
+        passIcon.classList.replace('bi-eye-slash', 'bi-eye'); // يرجع شكل العين
+    }
+}
+</script>
+{% endblock %}

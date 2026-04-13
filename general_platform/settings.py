@@ -6,8 +6,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # إعدادات الأمان (تذكر تغييرها عند الرفع الفعلي أونلاين)
 SECRET_KEY = 'django-insecure-kw&thiamc$*v)*6%&19o10j$3=$j-_y3en-uh2giyyb#ad8ilv'
-DEBUG = False
+DEBUG = True
 ALLOWED_HOSTS = ['*']
+CSRF_TRUSTED_ORIGINS = [
+    'https://elgeneeral.online',       # شيل ده وحط دومين المنصة بتاعك
+    'https://elgeneeral.online',   # لو عندك www ضيفها برضه
+]
 
 # تعريف التطبيقات
 INSTALLED_APPS = [

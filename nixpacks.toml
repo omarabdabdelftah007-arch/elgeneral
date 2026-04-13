@@ -1,2 +1,2 @@
 [start]
-cmd = "python manage.py migrate && gunicorn elgeneral.wsgi:application --bind 0.0.0.0:3000"
+cmd = "python manage.py migrate && gunicorn general_platform.wsgi:application --bind 0.0.0.0:3000"

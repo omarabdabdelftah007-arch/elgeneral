@@ -521,13 +521,14 @@
 <style>
 .floating-container {
     position: fixed !important;
-    bottom: 20px !important;    /* المسافة من تحت */
-    right: 20px !important;     /* المسافة من اليمين */
-    width: max-content !important; /* مهم جداً عشان مياخدش عرض الشاشة كله */
-    display: flex;
-    flex-direction: column-reverse; /* يفتح لفوق */
-    align-items: center;
-    gap: 15px;
+    bottom: 30px !important;
+    right: 30px !important;
+    left: auto !important; /* عشان نلغي أي left قديم */
+    width: 70px !important;  /* حددنا عرض ضيق عشان مياخدش عرض الشاشة */
+    height: auto !important;
+    display: flex !important;
+    flex-direction: column-reverse !important;
+    align-items: center !important;
     z-index: 999999 !important;
 }
 

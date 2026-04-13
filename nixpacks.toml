@@ -1,2 +1,2 @@
 [start]
-cmd = "pip install gunicorn && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+cmd = "pip install gunicorn whitenoise && python manage.py migrate && python manage.py collectstatic --noinput && python manage.py runserver 0.0.0.0:8000"

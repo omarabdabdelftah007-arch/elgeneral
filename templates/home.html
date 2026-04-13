@@ -521,15 +521,18 @@
 <style>
 .floating-container {
     position: fixed !important;
-    bottom: 0px !important;
-    right: 30px !important;
-    left: auto !important; /* عشان نلغي أي left قديم */
-    width: 70px !important;  /* حددنا عرض ضيق عشان مياخدش عرض الشاشة */
+    bottom: 20px !important; 
+    /* التعديل: غيرنا right لـ left */
+    left: 30px !important; 
+    right: auto !important; 
+    width: auto !important;  
     height: auto !important;
     display: flex !important;
-    flex-direction: column-reverse !important;
-    align-items: bottom !important;
+    flex-direction: column !important; 
+    /* التعديل: المحاذاة بقت لليسار flex-start */
+    align-items: flex-start !important; 
     z-index: 999999 !important;
+    gap: 15px;
 }
 
 .fab-main {
@@ -544,6 +547,7 @@
     font-size: 26px;
     cursor: pointer;
     transition: 0.3s;
+    order: 2; 
 }
 
 .floating-container.active .fab-main {
@@ -553,11 +557,14 @@
 .fab-options {
     display: flex;
     flex-direction: column;
-    gap: 0px;
+    gap: 10px;
     opacity: 0;
     visibility: hidden;
-    transform: translateY(20px);
+    transform: translateY(20px); 
     transition: 0.3s;
+    order: 1;
+    /* التعديل: محاذاة العناصر جوه القائمة لليسار */
+    align-items: flex-start; 
 }
 
 .floating-container.active .fab-options {
@@ -573,9 +580,12 @@
     color: white;
     text-decoration: none;
     display: flex;
+    /* لو عايز الأيقونة تبقى هي اللي على الشمال والكلام جنبها */
+    flex-direction: row; 
     gap: 10px;
     align-items: center;
     transition: 0.3s;
+    white-space: nowrap; 
 }
 
 .fab-option-item:hover {

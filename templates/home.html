@@ -521,14 +521,14 @@
 <style>
 .floating-container {
     position: fixed !important;
-    bottom: 0px !important;
-    padding-bottom: 15px;
-    right: 30px !important;
-    z-index: 999999 !important;
+    bottom: 20px !important;    /* المسافة من تحت */
+    right: 20px !important;     /* المسافة من اليمين */
+    width: max-content !important; /* مهم جداً عشان مياخدش عرض الشاشة كله */
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: column-reverse; /* يفتح لفوق */
     align-items: center;
     gap: 15px;
+    z-index: 999999 !important;
 }
 
 .fab-main {

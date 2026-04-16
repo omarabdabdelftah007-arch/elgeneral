@@ -24,7 +24,8 @@ class StudentProfile(models.Model):
     ]
     SYSTEMS = [
         ('general', 'عام'),
-        ('azhar', 'أزهري')
+        ('azhar', 'أزهري'),
+        ('bakaloria', 'بكالوريا')
     ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student_profile')

@@ -20,11 +20,15 @@ urlpatterns = [
     path('register/', views.register_student, name='register'),
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', views.logout_view, name='logout'),
+    path('logout/', views.logout_view, name='signout'),  # يدعم الاسمين logout و signout لتفادي أخطاء الـ HTML
+    
+    # 5. الامتحانات والنتائج
+    path('exams/', views.exams_view, name='exams'),
+    path('exam/<int:exam_id>/take/', views.take_exam, name='take_exam'),       # مسار بدء ودخول الامتحان
+    path('exam/<int:exam_id>/result/', views.exam_result_view, name='exam_result'), # مسار نتيجة الامتحان
 ]
 
-# 5. تفعيل عرض ملفات الميديا (الفيديوهات والصور) أثناء التطوير
+# تفعيل عرض ملفات الميديا (الفيديوهات والصور) والـ Static أثناء التطوير
 if settings.DEBUG:
-    # ربط مسار MEDIA المخصص للفيديوهات والصور المرفوعة
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    # ربط مسار STATIC لملفات الـ CSS والـ JS
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

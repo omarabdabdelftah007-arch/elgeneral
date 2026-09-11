@@ -1,90 +1,164 @@
 {% extends 'home.html' %}
 
 {% block content %}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 <style>
-    /* حاوية الخيارات الزجاجية */
     .auth-selection {
         display: flex;
-        gap: 20px;
+        gap: clamp(16px, 3vw, 26px);
         justify-content: center;
-        margin-top: 20px;
+        align-items: stretch;
+        margin: clamp(20px, 4vw, 40px) auto;
         flex-wrap: wrap;
         width: 100%;
         max-width: 850px;
     }
 
     .auth-box {
-        background: rgba(255, 255, 255, 0.03);
-        backdrop-filter: blur(15px);
-        border: 1px solid rgba(255, 107, 53, 0.2);
-        border-radius: 30px;
-        padding: 40px 20px;
+        background: var(--ink-2);
+        border: 1px solid var(--line-soft);
+        padding: clamp(30px, 5vw, 44px) 26px;
         text-align: center;
         flex: 1;
         min-width: 280px;
-        transition: 0.4s ease;
+        transition: border-color 0.3s ease, transform 0.3s ease;
         text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
     .auth-box:hover {
-        transform: translateY(-10px);
-        border-color: #ff6b35;
-        background: rgba(255, 107, 53, 0.05);
+        transform: translateY(-8px);
+        border-color: var(--copper);
+    }
+
+    .auth-icon {
+        width: 60px; height: 60px;
+        border: 1px solid var(--copper);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--copper-light);
+        font-size: 1.5rem;
+        margin-bottom: 18px;
     }
 
     .auth-box h3 {
-        color: #000000;
-        font-size: 24px;
-        margin: 15px 0;
+        font-family: var(--serif);
+        color: var(--paper);
+        font-size: 1.3rem;
+        margin: 0 0 8px;
     }
 
     .auth-box p {
-        color: #ffffff;
-        font-size: 14px;
+        color: var(--muted);
+        font-size: 0.88rem;
+        line-height: 1.6;
+        margin: 0;
     }
 
-    /* أيقونات بسيطة */
-    .auth-icon {
-        font-size: 45px;
+    .auth-box.login-box {
+        cursor: default;
+    }
+
+    .auth-box form {
+        margin-top: 22px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .auth-field {
+        width: 100%;
+        max-width: 260px;
+        padding: 11px 14px;
+        margin-bottom: 12px;
+        border-radius: 2px;
+        border: 1px solid var(--line);
+        background: var(--ink);
+        color: var(--paper);
+        text-align: center;
+        font-family: var(--sans);
+        font-size: 0.9rem;
+        transition: border-color 0.25s ease;
+    }
+    .auth-field:focus {
+        outline: none;
+        border-color: var(--copper);
+    }
+    .auth-field::placeholder { color: var(--muted); }
+
+    .auth-password-wrap {
+        position: relative;
+        width: 100%;
+        max-width: 260px;
+        margin-bottom: 16px;
+    }
+    .auth-password-wrap .auth-field { margin-bottom: 0; }
+    .auth-toggle-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: var(--copper-light);
+        font-size: 1rem;
+        transition: color 0.25s ease;
+    }
+    .auth-toggle-icon:hover { color: var(--paper); }
+
+    .auth-submit {
+        background: var(--copper);
+        color: var(--ink);
+        border: none;
+        padding: 11px 34px;
+        font-weight: 700;
+        font-size: 0.92rem;
+        cursor: pointer;
+        transition: background 0.3s ease, color 0.3s ease;
+    }
+    .auth-submit:hover { background: var(--wine); color: var(--paper); }
+
+    @media (max-width: 640px) {
+        .auth-selection { flex-direction: column; }
     }
 </style>
 
-<div class="auth-selection">
-    <a href="{% url 'register' %}" class="auth-box">
-        <div class="auth-icon">🆕</div>
-        <h3>طالب جديد</h3>
-        <p>أنشئ حسابك الآن وانضم لكتيبة الجنرال</p>
-    </a>
+<div class="section" dir="rtl">
+    <div class="auth-selection reveal">
+        <a href="{% url 'register' %}" class="auth-box">
+            <div class="auth-icon"><i class="fas fa-user-plus"></i></div>
+            <h3>طالب جديد</h3>
+            <p>أنشئ حسابك الآن وانضم لكتيبة الجنرال</p>
+        </a>
 
-    <div class="auth-box" style="cursor: default; background: rgba(255, 107, 53, 0.05); border-color: #000000;">
-        <div class="auth-icon">🔑</div>
-        <h3>طالب لدينا</h3>
-        <form method="POST" style="margin-top: 20px;">
-            {% csrf_token %}
-            <input type="text" name="username" placeholder="اسم المستخدم" required 
-                   style="width: 80%; padding: 10px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; text-align: center;">
-            <div style="position: relative; width: 80%; margin: 0 auto 15px auto;">
-    <input type="password" name="password" id="id_password" placeholder="كلمة السر" required 
-           style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; text-align: center;">
-    
-    <i class="bi bi-eye" id="toggleIcon" onclick="togglePassword()" 
-       style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #ff6b35; font-size: 1.2rem;"></i>
-</div>
-            <button type="submit" style="background: #09116d; color: white; border: none; padding: 10px 30px; border-radius: 8px; font-weight: bold; cursor: pointer;">دخول</button>
-        </form>
+        <div class="auth-box login-box">
+            <div class="auth-icon"><i class="fas fa-key"></i></div>
+            <h3>طالب لدينا</h3>
+            <p>سجّل دخولك لمتابعة كورساتك</p>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="text" name="username" placeholder="اسم المستخدم" required class="auth-field">
+                <div class="auth-password-wrap">
+                    <input type="password" name="password" id="id_password" placeholder="كلمة السر" required class="auth-field">
+                    <i class="fas fa-eye auth-toggle-icon" id="toggleIcon" onclick="togglePassword()"></i>
+                </div>
+                <button type="submit" class="auth-submit">دخول</button>
+            </form>
+        </div>
     </div>
 </div>
+
 <script>
 function togglePassword() {
     const passwordInput = document.getElementById('id_password');
     const toggleIcon = document.getElementById('toggleIcon');
     if (passwordInput.type === 'password') {
         passwordInput.type = 'text';
-        toggleIcon.classList.replace('bi-eye', 'bi-eye-slash');
+        toggleIcon.classList.replace('fa-eye', 'fa-eye-slash');
     } else {
         passwordInput.type = 'password';
-        toggleIcon.classList.replace('bi-eye-slash', 'bi-eye');
+        toggleIcon.classList.replace('fa-eye-slash', 'fa-eye');
     }
 }
 </script>

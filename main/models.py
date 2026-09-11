@@ -7,14 +7,7 @@ from django.contrib.auth.models import AbstractUser
 # ==========================================
 
 class User(AbstractUser):
-    is_student = models.BooleanField(default=False)
-    is_parent = models.BooleanField(default=False)
-
-class ParentProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='parent_profile')
-    
-    def __str__(self):
-        return f"ولي أمر: {self.user.username}"
+    is_student = models.BooleanField(default=True)
 
 class StudentProfile(models.Model):
     GRADES = [
@@ -29,13 +22,10 @@ class StudentProfile(models.Model):
     ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student_profile')
-    parent = models.ForeignKey(ParentProfile, on_delete=models.SET_NULL, null=True, blank=True, related_name='students')
-    
     grade = models.CharField(max_length=20, choices=GRADES, verbose_name="السنة الدراسية")
     system = models.CharField(max_length=20, choices=SYSTEMS, verbose_name="النظام")
     governorate = models.CharField(max_length=50, verbose_name="المحافظة")
     phone = models.CharField(max_length=15, verbose_name="رقم الطالب")
-    parent_phone = models.CharField(max_length=15, verbose_name="رقم ولي الأمر")
     
     is_active = models.BooleanField(default=False, verbose_name="تم تفعيل الحساب")
 
@@ -54,7 +44,6 @@ class TeacherSettings(models.Model):
     name = models.CharField(max_length=100, default="الأستاذ محمد عيد")
     main_image = models.ImageField(upload_to='teacher_info/', help_text="ارفع صورة المستر الكبيرة هنا")
     
-    # هنا التعديل: فيديو الصفحة الرئيسية فقط أصبح ملفاً مرفوعاً
     intro_video = models.FileField(
         upload_to='teacher_videos/', 
         null=True, 
@@ -81,7 +70,7 @@ class HonorRoll(models.Model):
         verbose_name_plural = "لوحة الشرف"
 
 # ==========================================
-# 3. الكورسات والمحاضرات (رجعت يوتيوب كما كانت)
+# 3. الكورسات والمحاضرات
 # ==========================================
 
 SYSTEM_CHOICES = [
@@ -114,10 +103,7 @@ class Course(models.Model):
 class Lecture(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='lectures')
     title = models.CharField(max_length=200, verbose_name="عنوان المحاضرة")
-    
-    # رجعت URLField كما طلبت لسهولة الاستخدام مع يوتيوب
     video_url = models.URLField(help_text="رابط فيديو اليوتيوب") 
-    
     pdf_file = models.FileField(upload_to='lectures_pdf/', blank=True, null=True, verbose_name="ملف PDF للمحاضرة")
     order = models.PositiveIntegerField(default=0, verbose_name="ترتيب المحاضرة")
 
@@ -157,3 +143,45 @@ class Enrollment(models.Model):
 
     def __str__(self):
         return f"{self.student.username} -> {self.course.title}"
+
+# ==========================================
+# 5. الامتحانات والأسئلة
+# ==========================================
+
+class Exam(models.Model):
+    title = models.CharField(max_length=200, verbose_name="عنوان الامتحان")
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, blank=True, null=True, related_name='exams', verbose_name="التابع لكورس")
+    lecture = models.ForeignKey(Lecture, on_delete=models.SET_NULL, blank=True, null=True, related_name='exams', verbose_name="تابع لمحاضرة (اختياري)")
+    is_comprehensive = models.BooleanField(default=False, verbose_name="امتحان شامل؟")
+    duration_mins = models.IntegerField(default=30, verbose_name="مدة الامتحان بالدقائق")
+
+    class Meta:
+        verbose_name = "امتحان"
+        verbose_name_plural = "📝 الامتحانات"
+
+    def __str__(self):
+        return self.title
+
+class Question(models.Model):
+    exam = models.ForeignKey(Exam, on_delete=models.CASCADE, related_name='questions', verbose_name="الامتحان")
+    text = models.TextField(verbose_name="نص السؤال")
+    image = models.ImageField(upload_to='questions_images/', blank=True, null=True, verbose_name="صورة مع السؤال (اختياري)")
+    choice1 = models.CharField(max_length=255, verbose_name="الاختيار الأول")
+    choice2 = models.CharField(max_length=255, verbose_name="الاختيار الثاني")
+    choice3 = models.CharField(max_length=255, verbose_name="الاختيار الثالث")
+    choice4 = models.CharField(max_length=255, verbose_name="الاختيار الرابع")
+
+    CORRECT_ANSWER_CHOICES = [
+        ('1', 'الاختيار الأول'),
+        ('2', 'الاختيار الثاني'),
+        ('3', 'الاختيار الثالث'),
+        ('4', 'الاختيار الرابع'),
+    ]
+    correct_answer = models.CharField(max_length=1, choices=CORRECT_ANSWER_CHOICES, verbose_name="الإجابة الصحيحة")
+
+    class Meta:
+        verbose_name = "سؤال"
+        verbose_name_plural = "❓ الأسئلة"
+
+    def __str__(self):
+        return f"سؤال في: {self.exam.title}"

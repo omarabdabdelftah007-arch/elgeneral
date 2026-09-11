@@ -1,0 +1,260 @@
+{% extends 'home.html' %}
+
+{% block content %}
+<style>
+    .exams-page-head {
+        text-align: center;
+        max-width: 680px;
+        margin: clamp(20px, 4vw, 40px) auto clamp(20px, 4vw, 34px);
+    }
+    .exams-page-head .eyebrow {
+        font-size: 0.8rem;
+        letter-spacing: 3px;
+        color: var(--copper-light);
+        font-weight: 600;
+        display: block;
+        margin-bottom: 10px;
+    }
+    .exams-page-head h2 {
+        font-family: var(--serif);
+        font-size: clamp(1.8rem, 5vw, 2.6rem);
+        margin: 0 0 14px;
+        color: var(--paper);
+    }
+    .exams-page-quote {
+        font-family: var(--serif);
+        font-style: italic;
+        color: var(--muted);
+        font-size: clamp(0.95rem, 2.2vw, 1.1rem);
+        line-height: 1.8;
+        max-width: 560px;
+        margin: 0 auto;
+    }
+
+    /* MOTIVATIONAL PANEL */
+    .motive-panel {
+        border: 1px solid var(--line-soft);
+        background: var(--ink-2);
+        padding: clamp(30px, 5vw, 46px);
+        margin-bottom: clamp(40px, 7vw, 64px);
+        text-align: center;
+        position: relative;
+    }
+    .motive-panel::before, .motive-panel::after {
+        content: '';
+        position: absolute;
+        width: 28px; height: 28px;
+        border: 1px solid var(--copper);
+    }
+    .motive-panel::before { top: 0; right: 0; border-left: none; border-bottom: none; }
+    .motive-panel::after { bottom: 0; left: 0; border-right: none; border-top: none; }
+
+    .motive-icon-wrap {
+        width: 56px; height: 56px;
+        border: 1px solid var(--copper);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--copper-light);
+        font-size: 1.35rem;
+        margin: 0 auto 20px;
+    }
+    .motive-panel h3 {
+        font-family: var(--serif);
+        color: var(--paper);
+        font-size: clamp(1.3rem, 3.2vw, 1.7rem);
+        margin: 0 0 14px;
+    }
+    .motive-panel h3 span { color: var(--copper-light); }
+    .motive-panel p {
+        color: var(--muted);
+        max-width: 560px;
+        margin: 0 auto 26px;
+        line-height: 1.85;
+        font-size: 0.95rem;
+    }
+    .motive-tips {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0;
+        border-top: 1px solid var(--line-soft);
+        padding-top: 4px;
+    }
+    .motive-tip {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 0.85rem;
+        color: var(--paper);
+        padding: 14px 20px;
+        border-left: 1px solid var(--line-soft);
+    }
+    .motive-tip:last-child { border-left: none; }
+    .motive-tip i { color: var(--copper); font-size: 0.9rem; }
+
+    /* EXAMS GRID */
+    .exams-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: clamp(16px, 3vw, 26px);
+    }
+    .exam-card {
+        background: var(--ink-2);
+        border: 1px solid var(--line-soft);
+        padding: 26px;
+        transition: border-color 0.3s ease, transform 0.3s ease;
+    }
+    .exam-card:hover { border-color: var(--copper); transform: translateY(-6px); }
+
+    .exam-card-icon {
+        width: 50px; height: 50px;
+        border: 1px solid var(--copper);
+        display: flex; align-items: center; justify-content: center;
+        color: var(--copper-light);
+        font-size: 1.15rem;
+        margin-bottom: 18px;
+    }
+    .exam-card-title {
+        font-family: var(--serif);
+        font-size: 1.15rem;
+        color: var(--paper);
+        margin: 0 0 12px;
+    }
+    .exam-card-meta {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+        padding-bottom: 18px;
+        border-bottom: 1px solid var(--line-soft);
+    }
+    .exam-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.8rem;
+        color: var(--muted);
+    }
+    .exam-meta-item i { color: var(--copper); font-size: 0.75rem; }
+
+    .exam-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        padding: 4px 12px;
+        border: 1px solid;
+        margin-bottom: 18px;
+    }
+    .status-available { color: var(--copper-light); border-color: var(--copper); }
+    .status-coming { color: var(--muted); border-color: var(--line); }
+
+    .exam-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        padding: 12px;
+        font-family: var(--sans);
+        font-size: 0.9rem;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+        text-decoration: none;
+        transition: background 0.3s ease, color 0.3s ease;
+    }
+    .exam-btn-primary { background: var(--copper); color: var(--ink); }
+    .exam-btn-primary:hover { background: var(--wine); color: var(--paper); }
+    .exam-btn-disabled {
+        background: transparent;
+        border: 1px solid var(--line);
+        color: var(--muted);
+        cursor: not-allowed;
+    }
+
+    /* COMING SOON / EMPTY */
+    .exams-empty-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: clamp(60px, 10vw, 100px) 20px;
+        border: 1px solid var(--line-soft);
+    }
+    .exams-empty-state i {
+        font-size: 52px;
+        color: var(--copper);
+        opacity: 0.4;
+        margin-bottom: 20px;
+        display: block;
+    }
+    .exams-empty-state h3 {
+        font-family: var(--serif);
+        color: var(--paper);
+        font-size: 1.3rem;
+        margin: 0 0 10px;
+    }
+    .exams-empty-state p {
+        color: var(--muted);
+        font-size: 0.9rem;
+        max-width: 420px;
+        margin: 0 auto;
+    }
+
+    @media (max-width: 640px) {
+        .motive-tip { border-left: none; border-bottom: 1px solid var(--line-soft); width: 100%; justify-content: center; }
+        .motive-tip:last-child { border-bottom: none; }
+    }
+</style>
+
+<div class="section" dir="rtl">
+
+    <div class="exams-page-head reveal">
+        <span class="eyebrow">اختبر نفسك</span>
+        <h2>امتحاناتك الإلكترونية</h2>
+        <p class="exams-page-quote">"النجاح لا يأتي بالصدفة — يأتي بالتحضير الجيد والمثابرة والرغبة الحقيقية في التفوق"</p>
+    </div>
+
+    <div class="motive-panel reveal">
+        <div class="motive-icon-wrap"><i class="fas fa-bullseye"></i></div>
+        <h3>استعد للامتحان <span>بثقة واحتراف</span></h3>
+        <p>كل امتحان هو فرصة تثبت فيها لنفسك إنك أحسن من إمبارح — راجع ملاحظاتك، اتمرن على الأسئلة، وادخل الامتحان وأنت واثق من نفسك.</p>
+        <div class="motive-tips">
+            <div class="motive-tip"><i class="fas fa-book-open"></i> راجع الملخصات قبل الامتحان</div>
+            <div class="motive-tip"><i class="fas fa-moon"></i> نام كويس الليلة اللي قبله</div>
+            <div class="motive-tip"><i class="fas fa-pencil-alt"></i> اقرأ الأسئلة كويس قبل الإجابة</div>
+            <div class="motive-tip"><i class="fas fa-heart"></i> ثق في نفسك دايماً</div>
+        </div>
+    </div>
+
+    <div class="exams-grid reveal">
+        {% for exam in exams %}
+        <div class="exam-card">
+            <div class="exam-card-icon"><i class="fas fa-file-alt"></i></div>
+            <h3 class="exam-card-title">{{ exam.title }}</h3>
+            <div class="exam-card-meta">
+                <span class="exam-meta-item"><i class="fas fa-question-circle"></i> {{ exam.questions_count }} سؤال</span>
+                <span class="exam-meta-item"><i class="fas fa-clock"></i> {{ exam.duration }} دقيقة</span>
+                <span class="exam-meta-item"><i class="fas fa-signal"></i> {{ exam.difficulty }}</span>
+            </div>
+
+            {% if exam.is_coming %}
+                <div class="exam-status status-coming"><i class="fas fa-hourglass-half"></i> قريباً</div>
+                <button class="exam-btn exam-btn-disabled" disabled><i class="fas fa-lock"></i> غير متاح بعد</button>
+            {% else %}
+                <div class="exam-status status-available"><i class="fas fa-circle"></i> متاح الآن</div>
+                <a href="{% url 'take_exam' exam.id %}" class="exam-btn exam-btn-primary"><i class="fas fa-play"></i> ابدأ الامتحان</a>
+            {% endif %}
+        </div>
+        {% empty %}
+        <div class="exams-empty-state">
+            <i class="fas fa-hourglass-half"></i>
+            <h3>جاري تحضير الامتحانات الإلكترونية</h3>
+            <p>تابع لوحة التحكم بانتظام، هيتم إضافة الاختبارات فور تفعيلها.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}

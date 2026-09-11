@@ -4,31 +4,31 @@ from pathlib import Path
 # بناء المسارات داخل المشروع
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# إعدادات الأمان (تذكر تغييرها عند الرفع الفعلي أونلاين)
+# إعدادات الأمان
 SECRET_KEY = 'django-insecure-kw&thiamc$*v)*6%&19o10j$3=$j-_y3en-uh2giyyb#ad8ilv'
 DEBUG = True
 ALLOWED_HOSTS = ['*']
+
 CSRF_TRUSTED_ORIGINS = [
-    'https://elgeneeral.online',       # شيل ده وحط دومين المنصة بتاعك
-    'https://elgeneeral.online',   # لو عندك www ضيفها برضه
+    'https://elgeneeral.online',
+    'https://www.elgeneeral.online',
 ]
 
-# تعريف التطبيقات
+# تعريف التطبيقات (Unfold يجب أن يكون قبل django.contrib.admin)
 INSTALLED_APPS = [
-    'jazzmin',  # لوحة تحكم جازمين (يجب أن تكون قبل الأدمن)
+    'unfold',  # لوحة تحكم Unfold الجديدة
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'main',     # التطبيق الأساسي للمنصة
+    'main',    # التطبيق الأساسي للمنصة
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
-    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -50,7 +50,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'django.template.context_processors.media', # ضروري جداً لعرض الفيديوهات والصور
+                'django.template.context_processors.media',
             ],
         },
     },
@@ -58,7 +58,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'general_platform.wsgi.application'
 
-# قاعدة البيانات (SQLite حالياً للتطوير)
+# قاعدة البيانات (SQLite)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -75,19 +75,16 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # الإعدادات الإقليمية
-LANGUAGE_CODE = 'ar-eg' # اللغة العربية
+LANGUAGE_CODE = 'ar-eg'
 TIME_ZONE = 'Africa/Cairo'
 USE_I18N = True
 USE_TZ = True
 
 # --- إعدادات الملفات الثابتة (Static) والوسائط (Media) ---
-
-# ملفات الـ CSS والـ JS والصور الثابتة للموقع
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# ملفات الـ Media (الفيديوهات المرفوعة، صور المدرس، صور الكورسات)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 

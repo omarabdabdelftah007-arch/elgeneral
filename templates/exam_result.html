@@ -1,0 +1,219 @@
+{% extends 'home.html' %}
+
+{% block content %}
+<style>
+    :root {
+        --sage: #7A9A5B;
+        --sage-light: #A3C081;
+    }
+
+    .result-container {
+        max-width: 800px;
+        margin: clamp(20px, 4vw, 40px) auto;
+        background: var(--ink-2);
+        border: 1px solid var(--line-soft);
+        padding: clamp(28px, 5vw, 46px);
+        text-align: center;
+    }
+
+    .result-container .eyebrow {
+        font-size: 0.8rem;
+        letter-spacing: 3px;
+        color: var(--copper-light);
+        font-weight: 600;
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .result-container h1 {
+        font-family: var(--serif);
+        color: var(--paper);
+        font-size: clamp(1.5rem, 4vw, 2rem);
+        margin: 0 0 6px;
+    }
+
+    .result-container h3 {
+        font-family: var(--sans);
+        font-weight: 400;
+        color: var(--muted);
+        font-size: 0.95rem;
+        margin: 0 0 24px;
+    }
+
+    .score-ring {
+        width: 140px; height: 140px;
+        border: 1px solid var(--copper);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 26px;
+        position: relative;
+    }
+    .score-ring::before {
+        content: '';
+        position: absolute;
+        inset: -8px;
+        border: 1px solid var(--line-soft);
+        border-radius: 50%;
+    }
+    .score-badge {
+        font-family: var(--serif);
+        font-size: 2.6rem;
+        font-weight: 700;
+        color: var(--copper-light);
+    }
+
+    .status-text {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+    .status-pass { color: var(--sage-light); }
+    .status-fail { color: var(--wine-light); }
+
+    .result-divider {
+        border: none;
+        border-top: 1px solid var(--line-soft);
+        margin: 36px 0;
+    }
+
+    .questions-review { text-align: right; }
+    .questions-review > h2 {
+        font-family: var(--serif);
+        color: var(--paper);
+        font-size: 1.3rem;
+        margin: 0 0 24px;
+        text-align: center;
+    }
+
+    .review-box {
+        background: var(--ink);
+        border: 1px solid var(--line-soft);
+        border-right: 3px solid var(--line);
+        padding: 20px;
+        margin-bottom: 18px;
+    }
+    .review-box.correct { border-right-color: var(--sage); }
+    .review-box.wrong { border-right-color: var(--wine); }
+
+    .question-text {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--paper);
+        margin-bottom: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    .question-verdict { flex-shrink: 0; font-size: 0.82rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; }
+    .verdict-correct { color: var(--sage-light); }
+    .verdict-wrong { color: var(--wine-light); }
+
+    .choice-item {
+        padding: 11px 14px;
+        margin-bottom: 6px;
+        font-size: 0.9rem;
+        background: var(--ink-2);
+        border: 1px solid var(--line-soft);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: var(--paper);
+    }
+    .choice-item.student-picked-wrong {
+        background: rgba(129, 19, 49, 0.12);
+        border-color: var(--wine);
+        color: var(--wine-light);
+    }
+    .choice-item.is-the-correct-one {
+        background: rgba(122, 154, 91, 0.12);
+        border-color: var(--sage);
+        color: var(--sage-light);
+    }
+    .choice-item small { font-size: 0.75rem; opacity: 0.85; }
+
+    .home-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        background: var(--copper);
+        color: var(--ink);
+        border: none;
+        padding: 15px;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: none;
+        margin-top: 30px;
+        transition: background 0.3s ease, color 0.3s ease;
+    }
+    .home-btn:hover { background: var(--wine); color: var(--paper); }
+</style>
+
+<div class="section" dir="rtl">
+    <div class="result-container reveal">
+        <span class="eyebrow">تقرير النتيجة</span>
+        <h1>نتيجة الاختبار</h1>
+        <h3>{{ exam.title }}</h3>
+
+        <div class="score-ring">
+            <span class="score-badge">{{ score|floatformat:0 }}%</span>
+        </div>
+
+        <div class="status-text">
+            {% if score >= 50 %}
+                <span class="status-pass"><i class="fas fa-check-circle"></i> مبروك، لقد اجتزت الاختبار بنجاح!</span>
+            {% else %}
+                <span class="status-fail"><i class="fas fa-times-circle"></i> للأسف لم تجتز الاختبار، حاول مجدداً!</span>
+            {% endif %}
+        </div>
+
+        <hr class="result-divider">
+
+        <div class="questions-review">
+            <h2>مراجعة الإجابات</h2>
+            {% for item in questions_with_answers %}
+            <div class="review-box {% if item.is_correct %}correct{% else %}wrong{% endif %}">
+                <div class="question-text">
+                    <span>{{ forloop.counter }}. {{ item.object.text }}</span>
+                    {% if item.is_correct %}
+                        <span class="question-verdict verdict-correct"><i class="fas fa-check"></i> صح</span>
+                    {% else %}
+                        <span class="question-verdict verdict-wrong"><i class="fas fa-times"></i> خطأ</span>
+                    {% endif %}
+                </div>
+
+                <div class="choices-container">
+                    <div class="choice-item {% if item.student_choice == 1 and not item.is_correct %}student-picked-wrong{% endif %} {% if item.object.correct_choice == 1 %}is-the-correct-one{% endif %}">
+                        <span>أ) {{ item.object.choice1 }}</span>
+                        {% if item.object.correct_choice == 1 %}<small>(الإجابة الصحيحة)</small>{% endif %}
+                    </div>
+                    <div class="choice-item {% if item.student_choice == 2 and not item.is_correct %}student-picked-wrong{% endif %} {% if item.object.correct_choice == 2 %}is-the-correct-one{% endif %}">
+                        <span>ب) {{ item.object.choice2 }}</span>
+                        {% if item.object.correct_choice == 2 %}<small>(الإجابة الصحيحة)</small>{% endif %}
+                    </div>
+                    <div class="choice-item {% if item.student_choice == 3 and not item.is_correct %}student-picked-wrong{% endif %} {% if item.object.correct_choice == 3 %}is-the-correct-one{% endif %}">
+                        <span>ج) {{ item.object.choice3 }}</span>
+                        {% if item.object.correct_choice == 3 %}<small>(الإجابة الصحيحة)</small>{% endif %}
+                    </div>
+                    <div class="choice-item {% if item.student_choice == 4 and not item.is_correct %}student-picked-wrong{% endif %} {% if item.object.correct_choice == 4 %}is-the-correct-one{% endif %}">
+                        <span>د) {{ item.object.choice4 }}</span>
+                        {% if item.object.correct_choice == 4 %}<small>(الإجابة الصحيحة)</small>{% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <a href="/" class="home-btn"><i class="fas fa-home"></i> العودة للرئيسية</a>
+    </div>
+</div>
+{% endblock %}

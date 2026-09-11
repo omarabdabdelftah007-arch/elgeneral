@@ -2,94 +2,119 @@
 
 {% block content %}
 <style>
-    /* حاوية الفيديو الزجاجية */
     .video-container {
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 107, 53, 0.3);
-        border-radius: 20px;
-        padding: 20px;
-        margin: 20px auto;
+        background: var(--ink-2);
+        border: 1px solid var(--line-soft);
+        padding: clamp(16px, 3vw, 24px);
+        margin: clamp(20px, 4vw, 40px) auto;
         max-width: 900px;
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
     }
 
-    /* الحفاظ على أبعاد الفيديو 16:9 */
     .iframe-wrapper {
         position: relative;
-        padding-bottom: 56.25%; 
+        padding-bottom: 56.25%;
         height: 0;
         overflow: hidden;
-        border-radius: 15px;
-        background: #000; /* خلفية سوداء أثناء التحميل */
+        background: #000;
+        border: 1px solid var(--line-soft);
     }
 
     .iframe-wrapper iframe {
         position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
         border: none;
     }
 
-    .lecture-info {
-        margin-top: 20px;
-        color: white;
-        text-align: right;
+    .no-video-msg {
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        color: var(--muted);
+        font-size: 0.95rem;
+        text-align: center;
+        width: 80%;
     }
+    .no-video-msg i { color: var(--copper); font-size: 1.6rem; display: block; margin-bottom: 10px; }
 
-    .btn-pdf {
-        background: #ff6b35;
-        color: white !important;
-        padding: 12px 25px;
-        border-radius: 10px;
-        text-decoration: none;
-        display: inline-block;
-        margin-top: 10px;
-        transition: 0.3s;
-        font-weight: bold;
+    .lecture-info { margin-top: 20px; color: var(--paper); text-align: right; }
+
+    .lecture-info h2 {
+        font-family: var(--serif);
+        color: var(--paper);
+        margin: 0 0 6px;
+        font-size: clamp(1.3rem, 3.5vw, 1.7rem);
     }
-
-    .btn-pdf:hover {
-        background: #e55a2b;
-        transform: translateY(-2px);
+    .lecture-info .course-name {
+        color: var(--copper-light);
+        font-size: 0.88rem;
+        letter-spacing: 0.5px;
+        margin: 0;
     }
 
     .emergency-link {
         display: block;
         text-align: center;
-        margin-top: 15px;
-        color: #94a3b8;
+        margin-top: 16px;
+        color: var(--muted);
         font-size: 0.85rem;
         text-decoration: none;
+        transition: color 0.25s ease;
+    }
+    .emergency-link:hover { color: var(--copper-light); }
+
+    .lecture-footer {
+        margin-top: 20px;
+        padding-top: 18px;
+        border-top: 1px solid var(--line-soft);
     }
 
-    .emergency-link:hover {
-        text-decoration: underline;
-        color: #ff6b35;
+    .btn-pdf {
+        background: var(--copper);
+        color: var(--ink) !important;
+        padding: 12px 26px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        transition: background 0.3s ease, color 0.3s ease;
     }
+    .btn-pdf:hover { background: var(--wine); color: var(--paper) !important; }
+
+    .no-pdf-msg { color: var(--muted); font-size: 0.88rem; display: flex; align-items: center; gap: 8px; }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 22px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 0.88rem;
+        transition: color 0.25s ease;
+    }
+    .back-link:hover { color: var(--copper-light); }
 </style>
 
-<div class="container py-5" dir="rtl">
-    <div class="video-container">
+<div class="section" dir="rtl">
+    <div class="video-container reveal">
         <div class="lecture-info">
-            <h2 style="color: #ff6b35; margin-bottom: 5px;">{{ lecture.title }}</h2>
-            <p style="opacity: 0.8;">كورس: {{ lecture.course.title }}</p>
+            <h2>{{ lecture.title }}</h2>
+            <p class="course-name">كورس: {{ lecture.course.title }}</p>
         </div>
 
         <div class="iframe-wrapper">
             {% if lecture.video_url %}
-                <iframe 
-                    src="{{ lecture.get_embed_url }}" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                <iframe
+                    src="{{ lecture.get_embed_url }}"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     referrerpolicy="strict-origin-when-cross-origin"
                     allowfullscreen>
                 </iframe>
             {% else %}
-                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white;">
-                    ⚠️ عذراً، لا يوجد رابط فيديو متاح حالياً.
-                </div>
+                <div class="no-video-msg"><i class="fas fa-triangle-exclamation"></i> عذراً، لا يوجد رابط فيديو متاح حالياً.</div>
             {% endif %}
         </div>
 
@@ -97,17 +122,17 @@
             تواجه مشكلة في تشغيل الفيديو؟ اضغط هنا للمشاهدة على يوتيوب مباشرة
         </a>
 
-        <div class="lecture-info" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+        <div class="lecture-footer">
             {% if lecture.pdf_file %}
                 <a href="{{ lecture.pdf_file.url }}" class="btn-pdf" target="_blank">
-                    📥 تحميل ملزمة المحاضرة (PDF)
+                    <i class="fas fa-download"></i> تحميل ملزمة المحاضرة (PDF)
                 </a>
             {% else %}
-                <p style="color: #94a3b8; font-size: 0.9rem;">🚫 لا توجد ملفات PDF مرفقة بهذه المحاضرة.</p>
+                <p class="no-pdf-msg"><i class="fas fa-ban"></i> لا توجد ملفات PDF مرفقة بهذه المحاضرة.</p>
             {% endif %}
-            
-            <div style="margin-top: 25px;">
-                <a href="{% url 'general' %}" style="color: #94a3b8; text-decoration: none; font-size: 0.9rem;">
+
+            <div>
+                <a href="{% url 'general' %}" class="back-link">
                     <i class="fas fa-arrow-right"></i> العودة لقائمة المحاضرات
                 </a>
             </div>

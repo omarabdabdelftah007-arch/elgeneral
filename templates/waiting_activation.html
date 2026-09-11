@@ -3,69 +3,102 @@
 {% block content %}
 <style>
     .waiting-container {
-        background: rgba(255, 255, 255, 0.03);
-        backdrop-filter: blur(15px);
-        border: 1px solid rgba(255, 107, 53, 0.2);
-        border-radius: 30px;
-        padding: 60px 40px;
+        background: var(--ink-2);
+        border: 1px solid var(--line-soft);
+        padding: clamp(44px, 8vw, 70px) clamp(24px, 5vw, 44px);
         width: 90%;
         max-width: 500px;
-        margin: 100px auto;
+        margin: clamp(50px, 10vw, 100px) auto;
         text-align: center;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-        color: white;
+        color: var(--paper);
+        position: relative;
     }
 
-    .waiting-container i {
-        font-size: 60px;
-        color: #ff6b35;
-        margin-bottom: 20px;
+    .waiting-container::before,
+    .waiting-container::after {
+        content: '';
+        position: absolute;
+        width: 26px; height: 26px;
+        border: 1px solid var(--copper);
+    }
+    .waiting-container::before { top: 0; right: 0; border-left: none; border-bottom: none; }
+    .waiting-container::after { bottom: 0; left: 0; border-right: none; border-top: none; }
+
+    .waiting-icon {
+        width: 74px; height: 74px;
+        border: 1px solid var(--copper);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 24px;
+        color: var(--copper-light);
+        font-size: 1.8rem;
+    }
+
+    .waiting-container .eyebrow {
+        font-size: 0.8rem;
+        letter-spacing: 3px;
+        color: var(--copper-light);
+        font-weight: 600;
         display: block;
+        margin-bottom: 10px;
     }
 
     .waiting-container h2 {
-        color: #ff6b35;
-        margin-bottom: 15px;
+        font-family: var(--serif);
+        color: var(--paper);
+        margin: 0 0 18px;
+        font-size: clamp(1.5rem, 4vw, 1.9rem);
     }
 
     .waiting-container p {
-        color: #94a3b8;
-        line-height: 1.6;
-        font-size: 18px;
+        color: var(--muted);
+        line-height: 1.8;
+        font-size: 1rem;
+        margin: 0 0 10px;
+    }
+
+    .waiting-note {
+        font-size: 0.85rem !important;
+        margin-top: 16px !important;
+        padding-top: 16px;
+        border-top: 1px solid var(--line-soft);
     }
 
     .contact-btn {
-        display: inline-block;
-        margin-top: 25px;
-        padding: 12px 30px;
-        background: #ff6b35;
-        color: white;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 26px;
+        padding: 13px 30px;
+        background: var(--copper);
+        color: var(--ink);
         text-decoration: none;
-        border-radius: 12px;
-        font-weight: bold;
-        transition: 0.3s;
+        font-weight: 700;
+        font-size: 0.92rem;
+        transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
     }
-
     .contact-btn:hover {
-        background: #e55a2b;
+        background: var(--wine);
+        color: var(--paper);
         transform: translateY(-3px);
     }
 </style>
 
-<div class="waiting-container">
-    <div style="font-size: 50px; margin-bottom: 20px;">⏳</div>
-    
-    <h2>قيد المراجعة يا بطل! 🛡️</h2>
-    
+<div class="waiting-container reveal">
+    <div class="waiting-icon"><i class="fas fa-hourglass-half"></i></div>
+
+    <span class="eyebrow">قيد المراجعة</span>
+    <h2>حسابك قيد التفعيل</h2>
+
     <p>
-        أهلاً بك في منصة الجنرال. <br>
+        أهلاً بك في منصة الجنرال.<br>
         حسابك حالياً قيد التفعيل. بيتم مراجعة البيانات لضمان أمان محتوى الكتيبة.
     </p>
 
-    <p style="font-size: 14px; margin-top: 10px;">
+    <p class="waiting-note">
         لو تأخر التفعيل، تقدر تتواصل مع الدعم الفني أو السكرتارية.
     </p>
 
-    <a href="https://wa.me/رقم_تليفونك" class="contact-btn">تواصل معنا واتساب ✅</a>
+    <a href="https://wa.me/رقم_تليفونك" class="contact-btn"><i class="fab fa-whatsapp"></i> تواصل معنا واتساب</a>
 </div>
 {% endblock %}

@@ -2,39 +2,28 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from .forms import StudentRegistrationForm
-from .models import User, ParentProfile, StudentProfile, Course, Lecture, TeacherSettings, HonorRoll, Enrollment
+from .models import (
+    User, StudentProfile, Course, 
+    Lecture, TeacherSettings, HonorRoll, Enrollment, 
+    Exam
+)
 
 # ==========================================
-# 1. صفحة التسجيل (ربط الطالب بولي الأمر)
+# 1. صفحة التسجيل
 # ==========================================
 def register_student(request):
     if request.method == 'POST':
         form = StudentRegistrationForm(request.POST)
         if form.is_valid():
             try:
-                # إنشاء حساب ولي الأمر
-                parent_user = User.objects.create_user(
-                    username=form.cleaned_data['parent_username'],
-                    email=form.cleaned_data['parent_email'],
-                    password=form.cleaned_data['parent_password'],
-                    is_parent=True,
-                    is_student=False
-                )
-                parent_profile = ParentProfile.objects.create(user=parent_user)
-
-                # إنشاء حساب الطالب
                 student_user = User.objects.create_user(
                     username=form.cleaned_data['username'],
-                    email=form.cleaned_data['email'],
                     password=form.cleaned_data['password'],
-                    is_student=True,
-                    is_parent=False
+                    is_student=True
                 )
                 
                 student_profile = form.save(commit=False)
                 student_profile.user = student_user
-                student_profile.parent = parent_profile
-                # الحساب يكون غير مفعل (is_active=False) حتى يوافق الجنرال من الأدمن
                 student_profile.is_active = False 
                 student_profile.save()
 
@@ -54,7 +43,6 @@ def register_student(request):
 def home(request):
     teacher = TeacherSettings.objects.first()
     honor_students = HonorRoll.objects.all()
-    # في الرئيسية نعرض عينة من الكورسات فقط للتشويق
     courses = Course.objects.all()[:3] 
     
     context = {
@@ -69,38 +57,27 @@ def home(request):
 # ==========================================
 @login_required(login_url='login')
 def general(request):
-    # 1. لو ولي أمر، نوجهه لصفحة تانية أو الرئيسية (لأن الكورسات للطلبة)
-    if request.user.is_parent:
-        return render(request, "parent_dashboard.html", {'message': "هذه الصفحة مخصصة للطلاب فقط."})
-    
-    # 2. التحقق من تفعيل حساب الطالب بواسطة الجنرال
     if not request.user.is_staff:
         if hasattr(request.user, 'student_profile'):
             if not request.user.student_profile.is_active:
-                # لو الطالب لسه متمش تفعيله، يروح لصفحة الانتظار
                 return render(request, "waiting_activation.html")
         else:
             return redirect('home')
 
-   # 3. منطق عرض الكورسات المسموحة فقط
-    student_profile = request.user.student_profile
+    student_profile = getattr(request.user, 'student_profile', None)
 
-    # جلب الـ IDs الخاصة بالكورسات اللي الطالب دفع ثمنها "ومفعلة" له
-    allowed_course_ids = Enrollment.objects.filter(
-        student=request.user,
-        is_active=True
-    ).values_list('course_id', flat=True)
+    if student_profile:
+        allowed_course_ids = Enrollment.objects.filter(
+            student=request.user,
+            is_active=True
+        ).values_list('course_id', flat=True)
 
-    # فلترة الكورسات بناءً على: (أن يكون الطالب مشتركاً فيها + أن تكون من نفس سنته الدراسية)
-    courses = Course.objects.filter(
-        id__in=allowed_course_ids,
-        grade=student_profile.grade
-    )
-
-    # --- ملاحظة للجنرال ---
-    # لو عايز الكورسات تظهر لكل طلبة السنة الدراسية (حتى اللي مدفعوش) كعرض فقط:
-    # امسح سطر id__in=allowed_course_ids وسيب grade=student_profile.grade بس.
-    # ----------------------
+        courses = Course.objects.filter(
+            id__in=allowed_course_ids,
+            grade=student_profile.grade
+        )
+    else:
+        courses = Course.objects.all()
 
     return render(request, "general.html", {
         'courses': courses,
@@ -115,7 +92,6 @@ def lecture_detail(request, lecture_id):
     lecture = get_object_or_404(Lecture, id=lecture_id)
     course = lecture.course
     
-    # تأمين الفيديو: التأكد إن الطالب مشترك في "الكورس" التابع له هذه المحاضرة
     if not request.user.is_staff:
         is_enrolled = Enrollment.objects.filter(
             student=request.user, 
@@ -124,7 +100,7 @@ def lecture_detail(request, lecture_id):
         ).exists()
         
         if not is_enrolled:
-            return redirect('general') # لو مش مشترك يرجعه لصفحة الكورسات
+            return redirect('general')
                 
     return render(request, 'lecture_detail.html', {'lecture': lecture})
 
@@ -134,3 +110,74 @@ def lecture_detail(request, lecture_id):
 def logout_view(request):
     logout(request)
     return redirect('home')
+
+# ==========================================
+# 6. صفحة الامتحانات
+# ==========================================
+@login_required(login_url='login')
+def exams_view(request):
+    student_profile = getattr(request.user, 'student_profile', None)
+    
+    if not student_profile:
+        if request.user.is_staff:
+            exams_list = Exam.objects.all()
+            return render(request, 'exams.html', {'exams': exams_list})
+        else:
+            return redirect('home')
+
+    student_grade = student_profile.grade
+
+    subscribed_courses = Enrollment.objects.filter(
+        student=request.user,
+        is_active=True
+    ).values_list('course_id', flat=True)
+
+    exams_list = Exam.objects.filter(
+        course__grade=student_grade,
+        course_id__in=subscribed_courses
+    )
+
+    return render(request, 'exams.html', {'exams': exams_list})
+
+# ==========================================
+# 7. صفحة تقديم الامتحان 📝
+# ==========================================
+@login_required(login_url='login')
+def take_exam(request, exam_id):
+    exam = get_object_or_404(Exam, id=exam_id)
+    questions = exam.questions.all()
+    
+    if request.method == 'POST':
+        score = 0
+        for question in questions:
+            selected_choice = request.POST.get(f'question_{question.id}')
+            if selected_choice and selected_choice == str(question.correct_answer):
+                score += 1
+                
+        request.session[f'exam_{exam.id}_score'] = score
+        return redirect('exam_result', exam_id=exam.id)
+        
+    return render(request, 'take_exam.html', {
+        'exam': exam,
+        'questions': questions
+    })
+
+# ==========================================
+# 8. صفحة عرض نتيجة الامتحان 📊
+# ==========================================
+@login_required(login_url='login')
+def exam_result_view(request, exam_id):
+    exam = get_object_or_404(Exam, id=exam_id)
+    
+    score = request.session.get(f'exam_{exam_id}_score', 0)
+    questions_qs = getattr(exam, 'questions', None)
+    total = questions_qs.count() if questions_qs else 0
+    percentage = round((score / total * 100), 1) if total > 0 else 0
+
+    context = {
+        'exam': exam,
+        'score': score,
+        'total': total,
+        'percentage': percentage,
+    }
+    return render(request, 'exam_result.html', context)

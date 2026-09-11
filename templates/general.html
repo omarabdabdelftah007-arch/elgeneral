@@ -1,203 +1,243 @@
-{% extends 'home.html' %} 
+{% extends 'home.html' %}
 {% block content %}
 <style>
-    /* تحسين حاوية الكورسات لتكون مرنة جداً */
+    .courses-page-head {
+        text-align: center;
+        max-width: 640px;
+        margin: clamp(20px, 4vw, 40px) auto clamp(36px, 6vw, 54px);
+    }
+    .courses-page-head .eyebrow {
+        font-size: 0.8rem;
+        letter-spacing: 3px;
+        color: var(--copper-light);
+        font-weight: 600;
+        display: block;
+        margin-bottom: 10px;
+    }
+    .courses-page-head h2 {
+        font-family: var(--serif);
+        font-size: clamp(1.6rem, 4.5vw, 2.3rem);
+        margin: 0 0 10px;
+        color: var(--paper);
+    }
+    .courses-page-head p {
+        color: var(--muted);
+        font-size: 0.95rem;
+        margin: 0;
+    }
+
     .courses-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 25px;
+        gap: clamp(18px, 3vw, 28px);
         width: 100%;
-        margin-top: 30px;
-        padding: 10px;
     }
 
-    /* كارت الكورس الزجاجي المطور */
     .course-card {
-        background: rgba(255, 255, 255, 0.03);
-        backdrop-filter: blur(15px);
-        border: 1px solid rgba(255, 107, 53, 0.2);
-        border-radius: 30px;
+        background: var(--ink-2);
+        border: 1px solid var(--line-soft);
         overflow: hidden;
-        transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transition: border-color 0.3s ease, transform 0.3s ease;
         display: flex;
         flex-direction: column;
         height: 100%;
         position: relative;
     }
-
     .course-card:hover {
-        transform: translateY(-12px);
-        border-color: #ff6b35;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        transform: translateY(-8px);
+        border-color: var(--copper);
     }
 
-    /* شارة السنة الدراسية */
     .grade-badge {
         position: absolute;
-        top: 15px;
-        right: 15px;
-        background: #ff6b35;
-        color: white;
-        padding: 5px 15px;
-        border-radius: 50px;
-        font-size: 12px;
-        font-weight: bold;
+        top: 14px;
+        right: 14px;
+        background: rgba(18, 13, 10, 0.78);
+        backdrop-filter: blur(6px);
+        color: var(--copper-light);
+        border: 1px solid var(--copper);
+        padding: 4px 14px;
+        font-size: 0.72rem;
+        letter-spacing: 1px;
+        font-weight: 600;
         z-index: 10;
-        box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
     }
 
-    /* حل مشكلة أكل الصور (object-fit) */
     .course-img-container {
         width: 100%;
-        height: 190px;
-        background: #000; /* خلفية سوداء لو الصورة مش مقاسها بالظبط */
+        height: 200px;
+        background: var(--ink-3);
         overflow: hidden;
+        border-bottom: 1px solid var(--line-soft);
     }
-
     .course-img {
         width: 100%;
         height: 100%;
-        object-fit: cover; /* بتملى الكارت بدون مط الصورة */
-        border-bottom: 2px solid rgba(255, 107, 53, 0.1);
-        transition: 0.5s;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.6s ease;
     }
-
-    .course-card:hover .course-img {
-        transform: scale(1.1); /* تأثير زووم خفيف عند الوقوف على الكورس */
-    }
+    .course-card:hover .course-img { transform: scale(1.06); }
 
     .course-body {
-        padding: 25px;
+        padding: 24px;
         text-align: center;
         display: flex;
         flex-direction: column;
         flex-grow: 1;
     }
-
     .course-body h3 {
-        margin: 0 0 12px 0;
-        color: white;
-        font-size: clamp(20px, 4vw, 24px);
-        font-weight: 700;
+        margin: 0 0 10px;
+        font-family: var(--serif);
+        color: var(--paper);
+        font-size: clamp(1.15rem, 3vw, 1.35rem);
     }
-
     .course-body p.desc {
-        color: #94a3b8;
-        font-size: 14px;
+        color: var(--muted);
+        font-size: 0.88rem;
         margin-bottom: 20px;
         line-height: 1.6;
-        height: 45px;
-        overflow: hidden;
+        min-height: 42px;
     }
 
-    /* قائمة المحاضرات بشكل جمالي */
     .lectures-list {
         text-align: right;
-        background: rgba(0, 0, 0, 0.25);
-        padding: 15px;
-        border-radius: 20px;
+        background: rgba(0, 0, 0, 0.22);
+        border: 1px solid var(--line-soft);
+        padding: 6px 14px;
         margin-bottom: 20px;
-        max-height: 200px;
+        max-height: 210px;
         overflow-y: auto;
-        border: 1px solid rgba(255, 255, 255, 0.05);
     }
-
+    .lectures-list .list-label {
+        color: var(--copper-light);
+        font-size: 0.78rem;
+        letter-spacing: 1px;
+        font-weight: 600;
+        margin: 12px 0 8px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--line-soft);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
     .lecture-link {
         display: flex;
         align-items: center;
-        color: #cbd5e1;
+        gap: 8px;
+        color: var(--paper);
         text-decoration: none;
-        padding: 10px;
-        font-size: 14px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        transition: 0.3s;
+        padding: 10px 2px;
+        font-size: 0.86rem;
+        border-bottom: 1px solid var(--line-soft);
+        transition: color 0.25s ease, padding-right 0.25s ease;
+    }
+    .lecture-link:last-child { border-bottom: none; }
+    .lecture-link i { color: var(--copper); font-size: 0.7rem; transition: transform 0.25s ease; }
+    .lecture-link:hover { color: var(--copper-light); padding-right: 6px; }
+    .lecture-link:hover i { transform: translateX(-3px); }
+    .lectures-empty {
+        color: var(--muted);
+        font-size: 0.8rem;
+        text-align: center;
+        padding: 22px 0;
+        margin: 0;
     }
 
-    .lecture-link i {
-        margin-left: 10px;
-        color: #ff6b35;
-        font-size: 12px;
-    }
+    .lectures-list::-webkit-scrollbar { width: 4px; }
+    .lectures-list::-webkit-scrollbar-thumb { background: var(--copper); }
 
-    .lecture-link:hover {
-        color: white;
-        background: rgba(255, 107, 53, 0.1);
-        border-radius: 10px;
-        padding-right: 15px;
-    }
-
-    /* أزرار الدخول */
     .btn-enter {
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 10px;
-        background: linear-gradient(45deg, #ff6b35, #ff8c42);
-        color: white !important;
+        background: var(--copper);
+        color: var(--ink) !important;
         text-decoration: none;
-        padding: 14px;
-        border-radius: 15px;
-        font-weight: bold;
-        transition: 0.3s;
+        padding: 13px;
+        font-weight: 700;
+        font-size: 0.92rem;
+        transition: background 0.3s ease, color 0.3s ease;
         margin-top: auto;
         border: none;
-        box-shadow: 0 10px 20px rgba(255, 107, 53, 0.2);
+        cursor: pointer;
     }
-
-    .btn-enter:hover {
-        transform: scale(1.03);
-        box-shadow: 0 15px 25px rgba(255, 107, 53, 0.4);
-    }
+    .btn-enter:hover { background: var(--wine); color: var(--paper) !important; }
 
     .btn-disabled {
-        background: #334155;
+        background: transparent;
+        border: 1px solid var(--line);
+        color: var(--muted) !important;
         cursor: not-allowed;
-        opacity: 0.6;
-        box-shadow: none;
+    }
+    .btn-disabled:hover { background: transparent; color: var(--muted) !important; }
+
+    .courses-empty-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: clamp(60px, 10vw, 100px) 20px;
+        border: 1px solid var(--line-soft);
+    }
+    .courses-empty-state i {
+        font-size: 56px;
+        color: var(--copper);
+        opacity: 0.4;
+        margin-bottom: 20px;
+        display: block;
+    }
+    .courses-empty-state h2 {
+        font-family: var(--serif);
+        color: var(--paper);
+        font-size: 1.4rem;
+        margin: 0 0 8px;
+    }
+    .courses-empty-state p {
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin: 0 0 24px;
+    }
+    .courses-empty-state .btn-enter {
+        width: fit-content;
+        margin: 0 auto;
+        padding: 12px 30px;
     }
 
-    /* تخصيص السكرول بار */
-    .lectures-list::-webkit-scrollbar { width: 4px; }
-    .lectures-list::-webkit-scrollbar-thumb { background: #ff6b35; border-radius: 10px; }
-
     @media (max-width: 600px) {
-        .courses-grid { grid-template-columns: 1fr; padding: 15px; }
+        .courses-grid { grid-template-columns: 1fr; }
     }
 </style>
 
-<div class="container py-4" dir="rtl">
-    <div class="text-center mb-5">
-        <h2 style="font-size: clamp(24px, 5vw, 36px); font-weight: 800; color: white;">
-             مرحباً بك في عرين الجنرال ⚔️
-        </h2>
-        <p style="color: #94a3b8;">هنا تجد اشتراكاتك الحالية والمحاضرات المتاحة لك</p>
+<div class="section" dir="rtl">
+    <div class="courses-page-head reveal">
+        <span class="eyebrow">مساحتك الخاصة</span>
+        <h2>كتيبة الجنرال</h2>
+        <p>هنا تجد اشتراكاتك الحالية والمحاضرات المتاحة لك</p>
     </div>
-    
-    <div class="courses-grid">
+
+    <div class="courses-grid reveal">
         {% for course in courses %}
         <div class="course-card">
             <div class="grade-badge">{{ course.get_grade_display }}</div>
 
-           <div class="course-img-container" style="height: 220px; background: #000;">
-    {% if course.image %}
-        <img src="{{ course.image.url }}" class="course-img" 
-             style="width: 100%; height: 100%; object-fit: contain;"> {% endif %}
-</div>
-            
+            <div class="course-img-container">
+                {% if course.image %}
+                    <img src="{{ course.image.url }}" class="course-img" alt="{{ course.title }}">
+                {% endif %}
+            </div>
+
             <div class="course-body">
                 <h3>{{ course.title }}</h3>
                 <p class="desc">{{ course.description|truncatewords:10 }}</p>
-                
+
                 <div class="lectures-list">
-                    <p style="color: #ff6b35; font-size: 14px; font-weight: bold; margin-bottom: 12px; border-bottom: 1px solid rgba(255, 107, 53, 0.3); padding-bottom: 5px;">
-                        <i class="fas fa-play-circle"></i> محاضرات الشهر:
-                    </p>
+                    <p class="list-label"><i class="fas fa-play-circle"></i> محاضرات الشهر</p>
                     {% for lecture in course.lectures.all %}
                         <a href="{% url 'lecture_detail' lecture.id %}" class="lecture-link">
-                             <i class="fas fa-chevron-left"></i> {{ forloop.counter }}. {{ lecture.title }}
+                            <i class="fas fa-chevron-left"></i> {{ forloop.counter }}. {{ lecture.title }}
                         </a>
                     {% empty %}
-                        <p class="text-muted" style="font-size: 12px; text-align: center; padding: 20px;">لا توجد محاضرات في هذا الكورس بعد.</p>
+                        <p class="lectures-empty">لا توجد محاضرات في هذا الكورس بعد.</p>
                     {% endfor %}
                 </div>
 
@@ -215,13 +255,11 @@
             </div>
         </div>
         {% empty %}
-        <div style="grid-column: 1 / -1; text-align: center; padding: 100px 20px;">
-            <i class="fas fa-folder-open" style="font-size: 80px; color: #334155; margin-bottom: 20px;"></i>
-            <h2 style="color: #64748b;">لا توجد كورسات مفعلة لك حالياً.</h2>
-            <p style="color: #475569;">يرجى التواصل مع السكرتارية لتفعيل اشتراكك في الكورسات.</p>
-            <a href="https://wa.me/201002633125" class="btn-enter" style="width: fit-content; margin: 20px auto; padding: 12px 30px;">
-                تواصل معنا الآن
-            </a>
+        <div class="courses-empty-state">
+            <i class="fas fa-folder-open"></i>
+            <h2>لا توجد كورسات مفعلة لك حالياً</h2>
+            <p>يرجى التواصل مع السكرتارية لتفعيل اشتراكك في الكورسات.</p>
+            <a href="https://wa.me/201002633125" class="btn-enter">تواصل معنا الآن</a>
         </div>
         {% endfor %}
     </div>

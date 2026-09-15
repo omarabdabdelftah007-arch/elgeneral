@@ -9,21 +9,25 @@ SECRET_KEY = 'django-insecure-kw&thiamc$*v)*6%&19o10j$3=$j-_y3en-uh2giyyb#ad8ilv
 DEBUG = True
 ALLOWED_HOSTS = ['*']
 
-# تحديث النطاقات الموثوقة لمنع خطأ CSRF محلياً وعلى السيرفر
+# تحديث النطاقات الموثوقة (تم إضافة port 3000 وجميع البروتوكولات الخاصة بالدومين)
 CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:8000',
+    'http://127.0.0.1:3000',
     'http://127.0.0.1:*',
     'http://localhost:8000',
+    'http://localhost:3000',
     'http://localhost:*',
     'https://elgeneeral.online',
     'https://www.elgeneeral.online',
+    'http://elgeneeral.online',
+    'http://www.elgeneeral.online',
 ]
 
 # إعدادات جلسات الكوكيز للتطوير المحلي
 CSRF_COOKIE_SECURE = False
 SESSION_COOKIE_SECURE = False
 
-# تعريف التطبيقات (Unfold يجب أن يكون قبل django.contrib.admin)
+# تعريف التطبيقات (Unfold قبل django.contrib.admin)
 INSTALLED_APPS = [
     'unfold',  # لوحة تحكم Unfold
     'django.contrib.admin',
@@ -50,7 +54,7 @@ ROOT_URLCONF = 'general_platform.urls'
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'BACKEND': 'django.template.backends.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'templates')], 
         'APP_DIRS': True,
         'OPTIONS': {

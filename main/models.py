@@ -22,6 +22,10 @@ class StudentProfile(models.Model):
     ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student_profile')
+    full_name = models.CharField(max_length=150, verbose_name="اسم الطالب بالكامل", blank=True, null=True)
+    parent_name = models.CharField(max_length=150, verbose_name="اسم ولي الأمر", blank=True, null=True)
+    parent_phone = models.CharField(max_length=15, verbose_name="رقم ولي الأمر", blank=True, null=True)
+    
     grade = models.CharField(max_length=20, choices=GRADES, verbose_name="السنة الدراسية")
     system = models.CharField(max_length=20, choices=SYSTEMS, verbose_name="النظام")
     governorate = models.CharField(max_length=50, verbose_name="المحافظة")
@@ -34,7 +38,7 @@ class StudentProfile(models.Model):
         verbose_name_plural = "بروفايلات الطلاب"
 
     def __str__(self):
-        return self.user.username
+        return self.full_name or self.user.username
 
 # ==========================================
 # 2. إعدادات "الجنرال" (التحكم في الصفحة الرئيسية)

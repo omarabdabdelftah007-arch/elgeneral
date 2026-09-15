@@ -9,14 +9,23 @@ SECRET_KEY = 'django-insecure-kw&thiamc$*v)*6%&19o10j$3=$j-_y3en-uh2giyyb#ad8ilv
 DEBUG = True
 ALLOWED_HOSTS = ['*']
 
+# تحديث النطاقات الموثوقة لمنع خطأ CSRF محلياً وعلى السيرفر
 CSRF_TRUSTED_ORIGINS = [
+    'http://127.0.0.1:8000',
+    'http://127.0.0.1:*',
+    'http://localhost:8000',
+    'http://localhost:*',
     'https://elgeneeral.online',
     'https://www.elgeneeral.online',
 ]
 
+# إعدادات جلسات الكوكيز للتطوير المحلي
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
+
 # تعريف التطبيقات (Unfold يجب أن يكون قبل django.contrib.admin)
 INSTALLED_APPS = [
-    'unfold',  # لوحة تحكم Unfold الجديدة
+    'unfold',  # لوحة تحكم Unfold
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

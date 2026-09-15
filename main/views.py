@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import logout
+from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.decorators import login_required
-from .forms import StudentRegistrationForm
+from .forms import StudentRegistrationForm, LoginForm
 from .models import (
     User, StudentProfile, Course, 
     Lecture, TeacherSettings, HonorRoll, Enrollment, 
@@ -9,36 +9,103 @@ from .models import (
 )
 
 # ==========================================
-# 1. صفحة التسجيل
+# 1. صفحة التسجيل 📝
 # ==========================================
 def register_student(request):
+    error_message = None
+
     if request.method == 'POST':
         form = StudentRegistrationForm(request.POST)
         if form.is_valid():
             try:
-                student_user = User.objects.create_user(
-                    username=form.cleaned_data['username'],
-                    password=form.cleaned_data['password'],
-                    is_student=True
-                )
+                username = form.cleaned_data['username']
                 
-                student_profile = form.save(commit=False)
-                student_profile.user = student_user
-                student_profile.is_active = False 
-                student_profile.save()
+                # التحقق المباشر من عدم تكرار اسم المستخدم
+                if User.objects.filter(username=username).exists():
+                    error_message = "اسم المستخدم مستخدم بالفعل، اختر اسماً آخر."
+                else:
+                    # 1. إنشاء حساب المستخدم الأساسي
+                    student_user = User.objects.create_user(
+                        username=username,
+                        password=form.cleaned_data['password'],
+                        is_student=True
+                    )
+                    
+                    # 2. إنشاء ملف البروفايل للطالب
+                    StudentProfile.objects.create(
+                        user=student_user,
+                        full_name=form.cleaned_data.get('full_name', ''),
+                        phone=form.cleaned_data.get('phone', ''),
+                        parent_name=form.cleaned_data.get('parent_name', ''),
+                        parent_phone=form.cleaned_data.get('parent_phone', ''),
+                        grade=form.cleaned_data.get('grade'),
+                        system=form.cleaned_data.get('system'),
+                        governorate=form.cleaned_data.get('governorate', ''),
+                        is_active=True
+                    )
 
-                return redirect('login')
+                    # 3. تسجيل الدخول المباشر مع تحديد الـ Backend
+                    login(request, student_user, backend='django.contrib.auth.backends.ModelBackend')
+                    return redirect('general')
+                    
             except Exception as e:
-                print(f"Error during registration: {e}")
+                error_message = f"حدث خطأ أثناء حفظ البيانات: {e}"
         else:
-            print("Form Errors:", form.errors)
+            # استخراج أسباب عدم صحة البيانات من الـ Form
+            first_error_field = list(form.errors.keys())[0]
+            error_text = form.errors[first_error_field][0]
+            error_message = f"خطأ في حقل ({first_error_field}): {error_text}"
     else:
         form = StudentRegistrationForm()
     
-    return render(request, 'register.html', {'form': form})
+    return render(request, 'register.html', {
+        'form': form,
+        'error_message': error_message
+    })
 
 # ==========================================
-# 2. الصفحة الرئيسية (عرض عام)
+# 2. صفحة تسجيل الدخول (تسجيل باسم المستخدم أو الهاتف) 🔐
+# ==========================================
+def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('general')
+
+    error_message = None
+
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            login_input = form.cleaned_data['username_or_phone'].strip()
+            password = form.cleaned_data['password']
+
+            username_to_auth = login_input
+
+            # إذا أدخل الطالب أرقام فقط، نبحث عن الحساب المرتبط بهذا الرقم
+            if login_input.isdigit():
+                profile = StudentProfile.objects.filter(phone=login_input).first()
+                if profile:
+                    username_to_auth = profile.user.username
+
+            # مصادقة الحساب
+            user = authenticate(request, username=username_to_auth, password=password)
+
+            if user is not None:
+                login(request, user)
+                return redirect('general')
+            else:
+                error_message = "اسم المستخدم / رقم الهاتف أو كلمة السر غير صحيحة."
+        else:
+            error_message = "يرجى التأكد من ملء جميع البيانات."
+    else:
+        form = LoginForm()
+
+    return render(request, 'login.html', {
+        'form': form,
+        'error_message': error_message
+    })
+
+# ==========================================
+# 3. الصفحة الرئيسية (عرض عام) 🏠
 # ==========================================
 def home(request):
     teacher = TeacherSettings.objects.first()
@@ -53,7 +120,7 @@ def home(request):
     return render(request, "home.html", context)
 
 # ==========================================
-# 3. صفحة الكورسات (نظام الحماية والاشتراكات 🛡️)
+# 4. صفحة الكورسات (نظام الحماية والاشتراكات 🛡️)
 # ==========================================
 @login_required(login_url='login')
 def general(request):
@@ -85,7 +152,7 @@ def general(request):
     })
 
 # ==========================================
-# 4. تفاصيل المحاضرة (تأمين المشاهدة)
+# 5. تفاصيل المحاضرة (تأمين المشاهدة) 🎥
 # ==========================================
 @login_required(login_url='login')
 def lecture_detail(request, lecture_id):
@@ -105,14 +172,14 @@ def lecture_detail(request, lecture_id):
     return render(request, 'lecture_detail.html', {'lecture': lecture})
 
 # ==========================================
-# 5. تسجيل الخروج
+# 6. تسجيل الخروج 🚪
 # ==========================================
 def logout_view(request):
     logout(request)
     return redirect('home')
 
 # ==========================================
-# 6. صفحة الامتحانات
+# 7. صفحة الامتحانات 📋
 # ==========================================
 @login_required(login_url='login')
 def exams_view(request):
@@ -140,7 +207,7 @@ def exams_view(request):
     return render(request, 'exams.html', {'exams': exams_list})
 
 # ==========================================
-# 7. صفحة تقديم الامتحان 📝
+# 8. صفحة تقديم الامتحان ⏱️
 # ==========================================
 @login_required(login_url='login')
 def take_exam(request, exam_id):
@@ -163,7 +230,7 @@ def take_exam(request, exam_id):
     })
 
 # ==========================================
-# 8. صفحة عرض نتيجة الامتحان 📊
+# 9. صفحة عرض نتيجة الامتحان 📊
 # ==========================================
 @login_required(login_url='login')
 def exam_result_view(request, exam_id):

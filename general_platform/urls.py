@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.urls import path
-from main import views  # تأكد أن اسم التطبيق في مشروعك هو main
-from django.contrib.auth import views as auth_views
+from main import views  # تطبيق main
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -18,9 +17,9 @@ urlpatterns = [
     
     # 4. نظام الحسابات (تسجيل، دخول، خروج)
     path('register/', views.register_student, name='register'),
-    path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
+    path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
-    path('logout/', views.logout_view, name='signout'),  # يدعم الاسمين logout و signout لتفادي أخطاء الـ HTML
+    path('signout/', views.logout_view, name='signout'),  # مسار منفصل لتفادي أخطاء القوالب القديمة
     
     # 5. الامتحانات والنتائج
     path('exams/', views.exams_view, name='exams'),

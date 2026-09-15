@@ -54,8 +54,8 @@ ROOT_URLCONF = 'general_platform.urls'
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',  # تم التصحيح هنا
-        'DIRS': [os.path.join(BASE_DIR, 'templates')], 
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
